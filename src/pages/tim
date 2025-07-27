@@ -1,0 +1,14 @@
+{/* Pagination */}
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+              <Pagination
+                count={4}
+                page={1}
+                color="primary"
+                size="small"
+                sx={{
+                  "& .MuiPaginationItem-root": {
+                    fontSize: "0.875rem",
+                  },
+                }}
+              />
+            </Box>
