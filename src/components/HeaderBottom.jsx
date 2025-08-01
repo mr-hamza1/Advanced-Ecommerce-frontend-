@@ -4,7 +4,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 const HeaderBottom = () => {
   return (
-        <Box width={{xs:"21px", md:"100%"}} height={{xs:"3.5px", md:"35px"}}
+        <Box width={{xs:"21px", md:"100%", lg:"100%"}} height={{xs:"3.5px", md:"35px"}}
          elevation={0}
          sx={{
             backgroundColor: "#FFFFFF",
@@ -13,16 +13,17 @@ const HeaderBottom = () => {
             paddingTop: "10px",
             display: "flex",
             alignItems: "center",
-         }}>
+         }}
+         >
             
             <Box  
               sx={{
-                 left: 128,
+                 left: {md:68, lg:128},
                  position: "relative",
               }}
               display={"flex"}
               alignItems={"center"}
-              gap={3}
+              gap={{md:1.5, lg:3}}
               
             >
               <Box sx={{ display: "flex", alignItems: "center", }}>
@@ -76,10 +77,10 @@ const HeaderBottom = () => {
                display={"flex"}
                alignItems={"center"}
                sx={{
-                 left: 586,
+                 left: {md:300, lg:586},
                  position: "relative",
                }}
-               gap={2}
+               gap={{md:1, lg:2}}
                >
                   <Box sx={{ display: "flex", alignItems: "center", }}>         
                          <Typography  sx={{

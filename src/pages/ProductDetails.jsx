@@ -37,10 +37,10 @@ const Product = () => {
         <Box sx={{ backgroundColor: "#f7fafc",width:"100%", height: "100%", display: "flex" }}>
       <Box
         height={"100%"}
-        width={"83%"}
+        width={{md:"86%", lg:"83%"}}
         sx={{
           position: "relative",
-          left: 140,
+          left: {md:80, lg:140},
           pt: 2.3
         }}
       >
@@ -124,7 +124,7 @@ const Product = () => {
       </Box>
 
       {/* Middle Section - Product Details */}
-      <Box width={{md:"40%"}} pl={1} pb={2}>
+      <Box width={{md:"50%", lg:"40%"}} pl={1} pb={2}>
         {/* Stock Status */}
         <Chip
           label="✓ In stock"
@@ -148,11 +148,11 @@ const Product = () => {
         {/* Pricing */}
         <Box sx={{ mb: 3 ,backgroundColor: "#fff0df"}} p={2}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-             <Stack pr={4}>
+             <Stack pr={3}>
                 <Typography variant="h5" sx={{ color: '#ff5722', fontWeight: 'bold',}}>
               $98.00
             </Typography>
-            <Typography variant="body2" color="text.secondary" mt={1}>
+            <Typography variant="body2" color="text.secondary" mt={1} >
             50-199 pcs 
           </Typography>
              </Stack>
@@ -201,7 +201,7 @@ const Product = () => {
       </Box>
 
       {/* Right Section - Supplier Info and Actions */}
-      <Box sx={{ flex: '0 0 auto', width: { xs: '100%', md: '300px' } }} pl={3}>
+      <Box sx={{ flex: '0 0 auto', width: { xs: '100%', md: '20%', lg:"25%" } }} pl={{md:1, lg:3}}>
         {/* Supplier Card */}
         <Card sx={{ mb: 2, boxShadow: '0 2px 6px rgba(0,0,0,0.05)' }}>
           <CardContent>

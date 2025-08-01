@@ -9,46 +9,69 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import MenuIcon from '@mui/icons-material/Menu';
 import HeaderBottom from "./HeaderBottom";
+import { useNavigate } from "react-router-dom";
+import MenuDrawer from "../modules/Home/Menu";
+
 
 
 const Header = () => {
    
-    const [search , setSearch] = useState("")
+    const [search , setSearch] = useState("") 
+    const [open , setOpen] = useState(false) 
     const [categorySearch, setCategorySearch] = useState("")
+    const navigate = useNavigate();
+
+    const handleDrawerToggle = ()=>{
+      setOpen(true)
+    }
 
   return (
-    <>
-          <Box width={{xs:"21px", md:"90rem"}} height={{xs:"3.5px", md:"5rem"}}>
+    <Box >
+          <Box width={{xs:"100%", md:"30%", lg:"50%"}} height={{xs:"3.5px", md:"5rem"}}>
         <AppBar 
          position="fixed"
          elevation={0}
          sx={{
             backgroundColor: "#FFFFFF",
-            borderBottom: "2px solid #e0e0e0",
-            paddingBottom: "7px"
+            borderBottom: {xs:"none", md:"2px solid #e0e0e0"},
+            paddingBottom: "7px",
+            width:{xs:"100%", md:"100%", lg:"100%"},
          }}
         >
             <Toolbar >
-                         <MenuIcon
-                           sx={{
-                             color: "black",
-                             display: { xs: "flex", md: "none", lg: "none" },
-                             position: "relative",
-                             top: 5,
-                           }}
-                         />
-                       <Box
+                       
+               <IconButton 
+  onClick={handleDrawerToggle} 
+  sx={{
+    color: "black",
+    display: { xs: "flex", md: "none" }, // ✅ hide on md and lg
+    position: "relative",
+    top: 5
+  }}
+>
+  <MenuIcon />
+</IconButton>
+
+<Box sx={{ display: { xs: "block", md: "none" } }}>  {/* ✅ correct display */}
+  <MenuDrawer open={open} onClose={() => setOpen(false)} />
+</Box>
+
+
+                       <Box  
                           sx={{
                             height: {xs:"36px", md:"46px"},
                             width: {xs:"116px", md:"150px"},
                             position: "relative", // 👈 Add this
                             top: 5,
-                            left: {xs:13, md:100},
+                            left: {xs:1, md:40, lg: 100},
+                            cursor: "pointer"
                           }}
                            display={"flex"}
                            gap={1}
                            alignItems={"center"}
                            justifyContent={"center"}
+                           onClick={()=> navigate("/")}
+                          
                         >
                           <Box
                             sx={{
@@ -110,11 +133,11 @@ const Header = () => {
 
                           <Box 
                            sx={{
-                               width: "665px",
+                               width: {md: "42%", lg: "45%"},
                                height: "40px",
                                position: "relative", 
                                top: 2,
-                               left: 150,
+                               left: {md:80, lg: 150},
                                border: "1px solid rgba(13, 110, 253, 1)",
                                borderRadius: "10px",
                              }}
@@ -124,7 +147,7 @@ const Header = () => {
 
                           <Box
                             sx={{
-                              width: "421px",
+                              width: {md: "100%", lg: "70%"},
                               height: "40px",
                               border: "1px solid rgba(13, 110, 253, 1)",
                               borderTopLeftRadius: "10px",
@@ -148,7 +171,7 @@ const Header = () => {
 
                           <Box 
                            sx={{
-                               width: "145px",
+                               width: {md: "30%", lg: "30%"},
                                height: "40px",
                                borderTop: "1px solid rgba(13, 110, 253, 1)",
                                borderBottom: "1px solid rgba(13, 110, 253, 1)",
@@ -160,7 +183,7 @@ const Header = () => {
                              }}
                              >
                                <Box  sx={{
-                               width: "130px",
+                               width: {md:"120px",lg:"130px",},
                                height: "60px",
                                border: "none"
                                }}>
@@ -188,7 +211,7 @@ const Header = () => {
                             </Box>
                           <Box 
                            sx={{
-                               width: "100px",
+                               width: {md:"120px", lg:"100px"},
                                height: "40px",
                                background: "linear-gradient(rgba(18, 127, 255, 1), rgba(0, 103, 255, 1))",
                                color: "white",
@@ -199,6 +222,7 @@ const Header = () => {
 
                              }}
                              component={"button"}
+                             onClick={()=> navigate("/search")}
                              >
                                 Search
                         
@@ -206,11 +230,11 @@ const Header = () => {
                      </Box>
                         
                           <Box  sx={{
-                               width: "228px",
+                               width: { md:"200px",lg:"228px"},
                                height: "50px",
                                top: 5,
                                position: "relative",
-                               left: "300px",
+                               left: { md:"180px",lg:"300px"},
                                color: "rgba(139, 150, 165, 1)",
                                display: {xs: "none",md:"flex"},
                                justifyContent: "center",
@@ -270,7 +294,7 @@ const Header = () => {
                                alignItems: "center"
                             }}
                             >
-                                 <IconButton>
+                                 <IconButton onClick={()=> navigate("/cart")}>
                                      <ShoppingCartIcon/>
                                  </IconButton>
                                  <Typography width={"40px"}  variant="subtitle1" fontSize={"10px"}>My cart</Typography>
@@ -285,9 +309,13 @@ const Header = () => {
 
         </AppBar>
     </Box>
+     
+     <Box display={{xs:"none", md:"flex"}}>
+            <HeaderBottom />
+
+     </Box>
       
-      <HeaderBottom />
-    </>
+    </Box>
   )
 }
 

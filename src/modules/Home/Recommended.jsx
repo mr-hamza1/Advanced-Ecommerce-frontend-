@@ -111,7 +111,7 @@ const Recommended = () => {
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: "repeat(5, 1fr)",
+          gridTemplateColumns: {xs:"repeat(2, 1fr)",sm:"repeat(3, 1fr)", md:"repeat(5, 1fr)",},
           gap: 2,
         }}
       >
@@ -127,16 +127,17 @@ const Recommended = () => {
               transition: "box-shadow 0.2s ease-in-out",
               display: "flex",
               flexDirection: "column",
-              "&:hover": {
-                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-              },
+                                 "&:hover": {
+      transform: "translateY(-5px)",
+      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.4)",
+    }
             }}
           >
             <CardMedia
               sx={{
                 position: "relative",
                 mt:0.6,
-                ml:5.2,
+                ml:{xs:2, sm:8, md: 2.5, lg:5.8},
                 top: 10,
                 height: "130px", // Fixed image height
                 width: "130px",

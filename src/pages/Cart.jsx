@@ -18,10 +18,10 @@ const Cart = () => {
         <Box sx={{ backgroundColor: "#f7fafc",width:"100%", height: "100%", display: "flex" }}>
       <Box
         height={"100%"}
-        width={"83%"}
+        width={{md:"86%", lg:"83%"}}
         sx={{
           position: "relative",
-          left: 140,
+          left: {md:80, lg:140},
           pt: 2.3
         }}
       >

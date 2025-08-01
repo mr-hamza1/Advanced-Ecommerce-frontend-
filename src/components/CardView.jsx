@@ -26,7 +26,10 @@ export default function CardView({product}) {
   };
 
   return (
-      <Box height={"405px"} width={"100%"} mb={1.5}>
+      <Box height={"405px"} width={"100%"} mb={1.5} sx={{                    "&:hover": {
+      transform: "translateY(-5px)",
+      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.4)",
+    }}}>
         <Card
       sx={{
         width: "100%",

@@ -29,6 +29,7 @@ import Quotes from "../modules/Home/Quotes"
 import Recommended from "../modules/Home/Recommended"
 import Services from "../modules/Home/Services"
 import Suppliers from "../modules/Home/Suppliers"
+import MobileHome from "./mobile/MobileHome"
 
 const Home = () => {
   const [selectedIndex, setSelectedIndex] = useState(null)
@@ -76,13 +77,14 @@ const Home = () => {
   ]
 
   return (
-    <Box height={"100%"} width={"100%"} bgcolor={"#f7fafc"} >
+    <Box  width={"100%"}> 
+    <Box height={"100%"} width={"100%"} bgcolor={"#f7fafc"}  display={{xs:"none", md:"flex"}}>
       <Box
         height={"100%"}
-        width={"1250px"}
+        width={{md:"85%", lg:"82%"}}
         sx={{
           position: "relative",
-          left: 140,
+          left: {md:80, lg:140},
           pt: 2.3
         }}
       >
@@ -98,14 +100,14 @@ const Home = () => {
           border={"2px solid #e0e0e0"}
           borderRadius={"6px"}
         >
-          <Box height={"400px"} width={"18%"}>
+          <Box height={"400px"} width={{md:"20%", lg:"18%"}}>
             <List dense>
               {categories.map((category, index) => (
                 <ListItem
                   key={index}
                   onClick={() => setSelectedIndex(index)}
                   sx={{
-                    py: 0.7,
+                    py: {md:0.5, lg:0.7},
                     borderRadius: "6px",
                     backgroundColor: selectedIndex === index ? "rgba(229, 241, 255, 1)" : "transparent",
                     "&:hover": {
@@ -138,7 +140,7 @@ const Home = () => {
               backgroundPosition: "right center",
               display: "flex",
               alignItems: "center",
-              ml: 2,
+              ml: 1,
               mr: 2,
               borderRadius: 0.3,
             }}
@@ -188,14 +190,18 @@ const Home = () => {
             </Box>
           </Box>
 
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }} width={"20%"} height={"100%"}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }} width={"20%"} height={"100%"} pr={2}>
             {/* Welcome Card */}
             <Box
               height={"180px"}
-              width={"200px"}
+              width={{md:"180px", lg:"200px"}}
               sx={{
                 backgroundColor: "#e3f2fd",
                 borderRadius: "6px",
+                           "&:hover": {
+      transform: "translateY(-5px)",
+      boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+    }
               }}
               p={1}
             >
@@ -205,6 +211,11 @@ const Home = () => {
                     width: 40,
                     height: 40,
                     backgroundColor: "#1976d2",
+                    mr:1,
+                               "&:hover": {
+      transform: "translateY(-5px)",
+      boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+    }
                   }}
                 >
                   U
@@ -233,11 +244,15 @@ const Home = () => {
             {/* Promo Card */}
             <Box
               height={"95px"}
-              width={"200px"}
+              width={{md:"180px", lg:"200px"}}
               sx={{
                 backgroundColor: "#ff9800",
                 color: "white",
                 borderRadius: "6px",
+                           "&:hover": {
+      transform: "translateY(-5px)",
+      boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+    }
               }}
               p={2}
             >
@@ -253,11 +268,15 @@ const Home = () => {
             {/* Quotes Card */}
             <Box
               height={"95px"}
-              width={"200px"}
+              width={{md:"180px", lg:"200px"}}
               sx={{
                 backgroundColor: "#4fc3f7",
                 color: "white",
                 borderRadius: "6px",
+                           "&:hover": {
+      transform: "translateY(-5px)",
+      boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+    }
               }}
               pt={2}
               pl={2}
@@ -272,7 +291,7 @@ const Home = () => {
         </Stack>
 
         {/* New Deals and Offers Section */}
-        <Box width={"100%"} mt={3}>
+        <Box width={"100%"} mt={3} >
           {/* Deals and Offers */}
           <Box backgroundColor={"white"} border={"2px solid #e0e0e0"} width={"100%"}  borderRadius={"6px"} mb={2}
              sx={{
@@ -281,7 +300,7 @@ const Home = () => {
              }}
           >
              <Stack width={"25%"}>
-             <Stack ml={2.4} mt={-6}>
+             <Stack ml={2.4} mt={-6} >
                <Typography variant="h6" sx={{ fontWeight: 600 }}>
                   Deals and offers
                 </Typography>
@@ -327,7 +346,12 @@ const Home = () => {
              </Stack>
              <Stack direction={"row"} width={"75%"} >
                {dealsData.map((item, index) => (
-                  <Box textAlign={"center"} gap={2} borderLeft={"2px solid #e0e0e0"} width={"25%"} pt={2} pb={2} >
+                  <Box textAlign={"center"} gap={2} borderLeft={"2px solid #e0e0e0"} width={"25%"} pt={2} pb={2}
+                  sx={{           "&:hover": {
+      transform: "translateY(-5px)",
+      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.4)",
+    }}}
+                  >
                     <Box
                       component="img"
                       src={item.image}
@@ -375,7 +399,11 @@ const Home = () => {
                       position: "relative",
                       width: "25%",
                       height: "265px",
-                      overflow: "hidden",
+                      overflow: "hidden",  
+                      "&:hover": {
+      transform: "translateY(-5px)",
+      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.4)",
+    }
                     }}
                   >
                     {/* Background Image Layer (flipped) */}
@@ -392,7 +420,7 @@ const Home = () => {
                     />
                   
                     {/* Content Layer (normal text) */}
-                    <Box sx={{ position: "relative", p: 2 }} mb={2}>
+                    <Box sx={{ position: "relative", p: 2 }} mb={2}> 
                       <Typography variant="h6" sx={{ fontWeight: 600, fontSize: "20px", lineHeight: "26px" }} mb={2}>
                         Home and <br /> outdoor
                       </Typography>
@@ -412,7 +440,11 @@ const Home = () => {
                   <Stack direction={"row"} width={"100%"} >
                     {homeOutdoorData.map((item, index) => (
           index<4 &&
-                  <Box width={"25%"} borderLeft={"2px solid #e0e0e0"}  borderBottom={"2px solid #e0e0e0"}>
+                  <Box width={"25%"} borderLeft={"2px solid #e0e0e0"}  borderBottom={"2px solid #e0e0e0"}
+                  sx={{                    "&:hover": {
+      transform: "translateY(5px)",
+      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.4)",
+    }}}>
                      <Box >
                         <Typography variant="body1" sx={{ fontSize: "14px", fontWeight: 400, mb: 0.5 , mt: 1.5 ,ml: 2 }}>
                       {item.name}
@@ -432,7 +464,7 @@ const Home = () => {
                         objectFit: "cover",
                         borderRadius: "4px",
                         position: "relative",
-                        right: -160,
+                        right: {md: -105, lg:-160},
                         top: -20,
                         p: 0
                       }}
@@ -444,7 +476,10 @@ const Home = () => {
                                    <Stack direction={"row"} width={"100%"} >
                     {homeOutdoorData.map((item, index) => (
           index>=4 && 
-                  <Box width={"25%"} borderLeft={"2px solid #e0e0e0"}  >
+                  <Box width={"25%"} borderLeft={"2px solid #e0e0e0"} sx={{                    "&:hover": {
+      transform: "translateY(5px)",
+      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.4)",
+    }}}  >
                      <Box >
                         <Typography variant="body1" sx={{ fontSize: "14px", fontWeight: 400, mb: 0.5 , mt: 1.5 ,ml: 2 }}>
                       {item.name}
@@ -464,7 +499,7 @@ const Home = () => {
                         display: "block",
                         borderRadius: "4px",
                         position: "relative",
-                        right: -160,
+                        right: {md: -105, lg:-160},
                         top: -20,
                       }}
                     />
@@ -484,6 +519,10 @@ const Home = () => {
                       width: "25%",
                       height: "265px",
                       overflow: "hidden",
+                                          "&:hover": {
+      transform: "translateY(-5px)",
+      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.4)",
+    }
                     }}
                   >
                     {/* Background Image Layer (flipped) */}
@@ -520,7 +559,12 @@ const Home = () => {
                   <Stack direction={"row"} width={"100%"} >
                     {electronicsData.map((item, index) => (
           index<4 &&
-                  <Box width={"25%"} borderLeft={"2px solid #e0e0e0"}  borderBottom={"2px solid #e0e0e0"}>
+                  <Box width={"25%"} borderLeft={"2px solid #e0e0e0"}  borderBottom={"2px solid #e0e0e0"}
+                  sx={{                    "&:hover": {
+      transform: "translateY(5px)",
+      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.4)",
+    }}}
+                  >
                      <Box >
                         <Typography variant="body1" sx={{ fontSize: "14px", fontWeight: 400, mb: 0.5 , mt: 1.5 ,ml: 2 }}>
                       {item.name}
@@ -540,7 +584,7 @@ const Home = () => {
                         objectFit: "contain",
                         borderRadius: "4px",
                         position: "relative",
-                        right: -160,
+                        right: {md: -105, lg:-160},
                         top: -20,
                         p: 0
                       }}
@@ -552,7 +596,12 @@ const Home = () => {
                                    <Stack direction={"row"} width={"100%"} >
                     {electronicsData.map((item, index) => (
           index>=4 && 
-                  <Box width={"25%"} borderLeft={"2px solid #e0e0e0"}  >
+                  <Box width={"25%"} borderLeft={"2px solid #e0e0e0"} sx={{
+                   "&:hover": {
+      transform: "translateY(5px)",
+      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.4)",
+    }
+                  }}  >
                      <Box >
                         <Typography variant="body1" sx={{ fontSize: "14px", fontWeight: 400, mb: 0.5 , mt: 1.5 ,ml: 2 }}>
                       {item.name}
@@ -572,7 +621,7 @@ const Home = () => {
                         display: "block",
                         borderRadius: "4px",
                         position: "relative",
-                        right: -160,
+                        right: {md: -105, lg:-160},
                         top: -20,
                       }}
                     />
@@ -593,6 +642,8 @@ const Home = () => {
         </Box>
       </Box>
     </Box>
+    <MobileHome  Home1st={Home1st} dealsData={dealsData}/>
+    </Box> 
   )
 }
 

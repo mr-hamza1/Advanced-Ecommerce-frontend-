@@ -42,7 +42,8 @@ export default function Quotes() {
             {/* Left Content */}
             <Grid item xs={12} md={6}>
               <Stack spacing={2} sx={{ pr: { md: 4 },      position: "relative",
-                    top: -100, }} >
+                    top: {md: 100, lg:-100, }
+                    }} >
                 <Typography
                   sx={{
                     color: "white",
@@ -58,7 +59,7 @@ export default function Quotes() {
                 <Typography
                   sx={{
                     color: "rgba(255, 255, 255, 0.95)",
-                    fontSize: "18px",
+                    fontSize: {md: "16px", lg:"18px"},
                     lineHeight: 1.6,
                     maxWidth: "490px",
                     mt: 2,
@@ -82,7 +83,8 @@ export default function Quotes() {
                     backgroundColor: "white",
                     boxShadow: "0 12px 40px rgba(0,0,0,0.15)",
                     position: "relative",
-                    right: -230,
+                    right: {md: -505, lg: -230},
+                    top:{md: -105, lg:0},
                   }}
                 >
                   <Stack spacing={3}>

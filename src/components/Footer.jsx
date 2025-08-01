@@ -44,7 +44,7 @@ const footerLinks = {
 export default function Footer() {
   return (
     <Box >
-        <Stack spacing={4} sx={{backgroundColor: "#eff2f4"}} width={"100%"}>
+        <Stack spacing={4} sx={{backgroundColor: "#eff2f4"}} width={"100%"}  display={{xs:"none", md:"flex"}}>
           {/* Newsletter Section */}
           <Box sx={{ textAlign: "center", py: 3 }}>
             <Typography
@@ -110,7 +110,7 @@ export default function Footer() {
           </Box>
 
           {/* Main Footer Content */}
-          <Grid container spacing={12} sx={{backgroundColor: "rgba(255, 255, 255, 1)"}} pt={5} pb={5} pl={15} >
+          <Grid container spacing={{md:5, lg:12}} sx={{backgroundColor: "rgba(255, 255, 255, 1)"}} pt={5} pb={5} pl={15} >
             {/* Brand Section */}
             <Grid item xs={12} md={3} >
               <Stack spacing={2} mr={6} >
@@ -335,7 +335,7 @@ export default function Footer() {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              height: "40px",
+              height: "62px",
             }}
           >
             <Typography variant="body2"  sx={{ color: "#666", fontWeight: 400, fontSize: "16px", pl: 15, mb: 3}}>

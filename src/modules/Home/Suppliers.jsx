@@ -30,7 +30,7 @@ const suppliersData = [
 
 export default function Suppliers() {
   return (
-    <Box sx={{ backgroundColor: "#f8f9fa", py: 3 }}>
+    <Box sx={{ backgroundColor: "#f8f9fa", py: 3, pb: 7 }}>
         <Stack spacing={3}>
           {/* Suppliers by region section */}
           <Box>
@@ -49,7 +49,7 @@ export default function Suppliers() {
 
             <Stack spacing={3}>
               {suppliersData.map((row, rowIndex) => (
-                <Stack key={rowIndex} direction="row" spacing={10} sx={{ flexWrap: "wrap" }}>
+                <Stack key={rowIndex} direction="row" spacing={{md: 1, lg:10}} sx={{ flexWrap: "wrap" }}>
                   {row.map((supplier, index) => (
                     <Box
                       key={`${supplier.country}-${rowIndex}-${index}`}

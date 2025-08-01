@@ -80,9 +80,10 @@ export default function Services() {
                       border: "1px solid #ddd",
                       borderRadius: 1,
                       boxShadow: "none",
-                      "&:hover": {
-                        boxShadow: 2,
-                      },
+                                         "&:hover": {
+      transform: "translateY(-5px)",
+      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.4)",
+    }
                     }}
                   >
                     <Box sx={{ position: "relative", height: 80 }}>

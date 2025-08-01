@@ -60,15 +60,15 @@ export default function ShoppingCart() {
   const total = 1357.97
 
   return (
-    <Box>
+    <Box width={"100%"}>
       <Typography variant="h5" sx={{ mb: 3, fontWeight: "bold" }}>
         My cart (3)
       </Typography>
-      <Stack direction={"row"}>
+      <Stack direction={"row"} width={"100%"}>
         {/* Cart Items Section */}
            <Stack bgcolor={"white"} width={"70%"} p={3} sx={{  border:"1px solid rgba(222, 226, 231, 1)",
           borderRadius: "6px"}}>
-                        <Stack spacing={2} bgcolor={"white"} width={"100%"}>
+        <Stack spacing={2} bgcolor={"white"} width={"100%"}>
             {cartItems.map((item) => (
               <Card key={item.id} sx={{ p: 2,             "&:hover": {
       transform: "translateY(-5px)",
@@ -148,17 +148,19 @@ export default function ShoppingCart() {
            </Stack>
 
         {/* Order Summary Section */}
-           <Stack width={"28%"} height={"50%"} ml={3} sx={{             "&:hover": {
+           <Stack width={"28%"} height={"50%"} ml={3} sx={{            
+             "&:hover": {
       transform: "translateY(-5px)",
       boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
-    }}}>
+    }
+    }}>
              <Card sx={{ p: 3, top: 20 }}>
             <Stack spacing={2}>
               <Box>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                   Have a coupon?
                 </Typography>
-                <Stack direction="row" spacing={1}>
+                <Stack direction={{md:"column", lg:"row"}} spacing={1}>
                   <Box
                     component="input"
                     placeholder="Add coupon"
@@ -170,7 +172,10 @@ export default function ShoppingCart() {
                       fontSize: "14px",
                     }}
                   />
-                  <Button variant="text" size="small">
+                  <Button variant="text" size="small" sx={{ border: "1px solid #ddd",
+                      borderRadius: 1,
+                      bgcolor:"#f7fafc"
+                      }}>
                     Apply
                   </Button>
                 </Stack>
@@ -237,14 +242,14 @@ export default function ShoppingCart() {
 
 
       {/* Feature Cards */}
-      <Grid container spacing={2} sx={{ mt: 4,mb:2 }} gap={18}>
+      <Grid container spacing={2} sx={{ mt: 4,mb:2 }} gap={{md:5, lg:18}}>
         <Grid item xs={12} md={4}> 
           <Paper sx={{ p: 2, textAlign: "center",
              "&:hover": {
       transform: "translateY(-5px)",
       boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
     } }}>
-            <Security sx={{ fontSize: 40, color: "text.secondary", mb: 1 }} />
+            <Security sx={{ fontSize: 30, color: "text.secondary", mb: 1 }} />
             <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
               Secure payment
             </Typography>
@@ -260,7 +265,7 @@ export default function ShoppingCart() {
       transform: "translateY(-5px)",
       boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
     } }}>
-            <Support sx={{ fontSize: 40, color: "text.secondary", mb: 1 }} />
+            <Support sx={{ fontSize: 30, color: "text.secondary", mb: 1 }} />
             <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
               Customer support
             </Typography>
@@ -276,7 +281,7 @@ export default function ShoppingCart() {
       transform: "translateY(-5px)",
       boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
     } }}>
-            <LocalShipping sx={{ fontSize: 40, color: "text.secondary", mb: 1 }} />
+            <LocalShipping sx={{ fontSize: 30, color: "text.secondary", mb: 1 }} />
             <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
               Free delivery
             </Typography>

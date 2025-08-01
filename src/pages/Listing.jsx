@@ -244,20 +244,29 @@ export default function ProductListing() {
 
     const [open, setOpen] = useState(true);
 
+const applyViewModeSettings = (mode) => {
+  setRowsPerPage(mode === "grid" ? 9 : 6);
+  setOpened(mode !== "grid");
+};
+
 useEffect(() => {
-  setRowsPerPage(viewMode === "grid" ? 9 : 6);
-  setOpened(viewMode === "grid"? false : true)
+  applyViewModeSettings(viewMode);
 }, [viewMode]);
+
+const handleGridClick = () => setViewMode("grid");
+const handleListClick = () => setViewMode("list");
+
+
 
 
   return (
     <Box sx={{ backgroundColor: "#f7fafc",width:"100%", height: "100%", display: "flex" }}>
       <Box
         height={"100%"}
-        width={"1250px"}
+        width={{md:"86%",lg:"1250px"}}
         sx={{
           position: "relative",
-          left: 140,
+          left:{md:80, lg:140},
           pt: 2.3
         }}
       >
@@ -444,8 +453,8 @@ useEffect(() => {
 <Box sx={{ display: "flex", gap: 0.1}}>
   <IconButton
     size="small"
-    onClick={() => setViewMode("grid")}
-    color={viewMode === "grid" ? "primary" : "default"}
+onClick={handleGridClick}  
+  color={viewMode === "grid" ? "primary" : "default"}
     sx={{
       border: "1px solid #ddd",
       borderRadius: "3px",
@@ -457,8 +466,8 @@ useEffect(() => {
 
   <IconButton
     size="small"
-    onClick={() => setViewMode("list")}
-    color={viewMode === "list" ? "primary" : "default"}
+onClick={handleListClick} 
+   color={viewMode === "list" ? "primary" : "default"}
     sx={{
       border: "1px solid #ddd",
       borderRadius: "3px",
