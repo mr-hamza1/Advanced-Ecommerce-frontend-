@@ -4,20 +4,12 @@ import { useState } from "react";
 import { Box, Stack, Typography, IconButton, Rating, Card, CardMedia, CardContent } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { useNavigate } from "react-router-dom"
 
+
+  
 export default function CardView({product}) {
-
- const {
-  image,
-   name,
-  price,
-  originalPrice,
-  rating,
-  reviews,
-  description,
-} = product;
-
-
+     const navigate =  useNavigate()
 
   const [isFavorite, setIsFavorite] = useState(false);
 
@@ -29,7 +21,10 @@ export default function CardView({product}) {
       <Box height={"405px"} width={"100%"} mb={1.5} sx={{                    "&:hover": {
       transform: "translateY(-5px)",
       boxShadow: "0 4px 10px rgba(0, 0, 0, 0.4)",
-    }}}>
+    }}}
+        onClick={()=>(navigate(`/productDetails/${product._id}`))}
+
+    >
         <Card
       sx={{
         width: "100%",
@@ -47,8 +42,8 @@ export default function CardView({product}) {
         <CardMedia
           component="img"
           height="270"
-          image={image}
-          alt={name}
+          image={product?.images?.urls[0]}
+          alt={product?.name}
           sx={{
             objectFit: "contain",
             backgroundColor: "white",
@@ -63,7 +58,7 @@ export default function CardView({product}) {
           <Stack direction="row" alignItems="center" justifyContent="space-between">
             <Stack direction="row" alignItems="center" spacing={1}>
               <Typography variant="h6" fontWeight="bold" color="primary">
-                ${price.toFixed(2)}
+                ${product?.pricing?.amount.toFixed(2)- product?.discount}
               </Typography>
               <Typography
                 variant="body2"
@@ -72,7 +67,7 @@ export default function CardView({product}) {
                   color: "text.secondary",
                 }}
               >
-                ${originalPrice.toFixed(2)}
+                ${product?.pricing?.amount.toFixed(2)}
               </Typography>
             </Stack>
 
@@ -95,9 +90,9 @@ export default function CardView({product}) {
 
           {/* Rating Section */}
           <Stack direction="row" alignItems="center" spacing={0.5}>
-            <Rating value={rating} precision={0.5} size="small" readOnly />
+            <Rating value={product?.rating?.average} precision={0.5} size="small" readOnly />
             <Typography variant="caption" color="text.secondary">
-              ({reviews})
+              ({product?.rating?.count})
             </Typography>
           </Stack>
 
@@ -114,7 +109,7 @@ export default function CardView({product}) {
               overflow: "hidden",
             }}
           >
-            {name}
+            {product?.name}
           </Typography>
         </Stack>
       </CardContent>

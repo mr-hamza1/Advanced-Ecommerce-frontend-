@@ -16,105 +16,187 @@ import { ArrowBack, Security, Support, LocalShipping } from "@mui/icons-material
 
 import img1 from "../assets/Home/recommended/1.png"
 import img2 from "../assets/Home/interior/1.jpg"
+import { useDeleteCartItemMutation } from "../redux/api/productApi"
+import { useSelector } from "react-redux"
+import toast from "react-hot-toast"
+import { useNavigate } from "react-router-dom"
 
-const cartItems = [
-  {
-    id: 1,
-    image: "/placeholder.svg?height=80&width=80",
-    title: "T-shirts with multiple colors, for men and lady",
-    size: "medium",
-    color: "blue",
-    material: "Plastic",
-    seller: "Ariel Market",
-    price: 78.99,
-    quantity: 9,
-  },
-  {
-    id: 2,
-    image: "/placeholder.svg?height=80&width=80",
-    title: "T-shirts with multiple colors, for men and lady",
-    size: "medium",
-    color: "blue",
-    material: "Plastic",
-    seller: "Best factory LLC",
-    price: 39.0,
-    quantity: 3,
-  },
-  {
-    id: 3,
-    image: "/placeholder.svg?height=80&width=80",
-    title: "T-shirts with multiple colors, for men and lady",
-    size: "medium",
-    color: "blue",
-    material: "Plastic",
-    seller: "Ariel Market",
-    price: 170.3,
-    quantity: 1,
-  },
-]
 
-export default function ShoppingCart() {
+
+
+export default function ShoppingCart({products, isLoading, refetch}) {
+
+    const { user, loading } = useSelector((state) => state.userReducer)
+   
+    const navigate = useNavigate()
+
+   const [deleteItem] = useDeleteCartItemMutation()
+
+    const handleDeleteItem = async(id)=>{
+            if (!user?._id) {
+        toast.error("Please login to add or remove items to wishlist")
+        navigate("/login")
+        return
+      }
+  
+   
+      try {
+        const res = await deleteItem({
+          userId: user?._id,
+          id: id,
+        })
+  
+        if (res.data?.success) {
+          refetch()
+          toast.success(res.data.message)
+        } else {
+          toast.error(res.data?.error || "Something Went Wrong")
+        }
+      } catch (error) {
+        console.log(error)
+        toast.error(error.message || "Something Went Wrong")
+      }
+    }
+
+
   const subtotal = 1403.97
   const discount = 60.0
   const tax = 14.0
   const total = 1357.97
 
+  console.log(products)
+
   return (
     <Box width={"100%"}>
-      <Typography variant="h5" sx={{ mb: 3, fontWeight: "bold" }}>
+      <Typography variant="h5" sx={{ mb: 3, fontWeight: "bold", mt: 6 }} >
         My cart (3)
       </Typography>
-      <Stack direction={"row"} width={"100%"}>
+      <Stack direction={{xs: "column",md:"row"}} width={"100%"} >
         {/* Cart Items Section */}
-           <Stack bgcolor={"white"} width={"70%"} p={3} sx={{  border:"1px solid rgba(222, 226, 231, 1)",
-          borderRadius: "6px"}}>
-        <Stack spacing={2} bgcolor={"white"} width={"100%"}>
-            {cartItems.map((item) => (
+           <Stack bgcolor={"white"} width={{xs:"100%", md:"70%"}} p={3} sx={{  border:"1px solid rgba(222, 226, 231, 1)",
+          borderRadius: "6px", maxHeight: "450px",
+        overflowY: "auto",}} >
+        <Stack spacing={2} bgcolor={"white"} width={"100%"} sx={{
+           }} >
+            {isLoading? "laoding" : products.length<= 0? 
+           < Typography textAlign={"center"} fontWeight={"bold"} fontSize={"20px"} mb={20}>
+            No Product in cart
+           </Typography>
+            : products?.map((item) => (
               <Card key={item.id} sx={{ p: 2,             "&:hover": {
       transform: "translateY(-5px)",
       boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
     } }}>
-                <Box sx={{ display: "flex", gap: 2 }}>
+      
+      <Stack
+  direction="column"
+  spacing={2}
+  sx={{
+    display: { xs: "flex", sm: "flex", md: "none", lg: "none" },
+    p: 2,
+    border: "1px solid #eee",
+    borderRadius: 1
+  }}
+>
+  {/* Image + Info */}
+  <Stack direction="row" spacing={2} alignItems="flex-start">
+    <Box
+      component="img"
+      src={item.productId.images.urls[0]}
+      alt={item.productId.name}
+      sx={{
+        width: 150,
+        height: 120,
+        objectFit: "cover",
+        borderRadius: 1,
+        p: 1
+      }}
+    />
+
+    <Box sx={{ flex: 1 }}>
+      <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 1 }}>
+        {item.productId.name}
+      </Typography>
+
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+        {item.productId?.size && `Size: ${item.productId.size}, `}
+        {item.productId?.color && `Color: ${item.productId.color}, `}
+        Material: Best Quality
+      </Typography>
+
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        Seller: {item.productId.brand}
+      </Typography>
+    </Box>
+  </Stack>
+
+  {/* Price + Qty + Remove */}
+  <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
+    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+      ${item.productId.pricing.amount.toFixed(2)}
+    </Typography>
+
+    <FormControl size="small" sx={{ minWidth: 80 }}>
+      <Select value={item.quantity} displayEmpty>
+        <MenuItem value={item.quantity}>Qty: {item.quantity}</MenuItem>
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+          <MenuItem key={num} value={num}>
+            Qty: {num}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+
+    <Button color="error" variant="outlined" onClick={() =>handleDeleteItem(item._id)}>
+      Remove
+    </Button>
+  </Stack>
+</Stack>
+
+
+                <Box sx={{ display: {xs:"none",md:"flex"}, gap: 2 }}>
                   <Box
                     component="img"
-                    src={img1}
-                    alt={item.title}
+                    src={item.productId.images.urls[0]}
+                    alt={item.productId.name}
                     sx={{
-                      width: 120,
-                      height: 130,
+                      width: 150,
+                      height: 120,
                       objectFit: "cover",
                       borderRadius: 1,
-                      bgcolor: "#f0f0f0",
-                      p:2
+                      p:1
                     }}
                   />
 
                   <Box sx={{ flex: 1 }}>
                     <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 1 }}>
-                      {item.title}
+                      {item.productId.name}
                     </Typography>
 
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                      Size: {item.size}, Color: {item.color}, Material: {item.material}
-                    </Typography>
+                      {item.productId?.size && `Size: ${item.productId?.size},`}
+                      {item.productId?.color && `Color: ${item.productId.color},`}
+                       Material: Best Quality
+                                           </Typography>
 
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      Seller: {item.seller}
+                      Seller: {item.productId.brand}
                     </Typography>
 
                     <Stack direction="row" spacing={2} alignItems="center">
-                      <Link href="#" color="error" underline="hover" variant="body2">
+                      <Button  color="error" variant="outlined"onClick={() => handleDeleteItem(item._id)}
+>
                         Remove
-                      </Link>
-                      <Link href="#" color="primary" underline="hover" variant="body2">
+                      </Button>
+                      {/* <Link href="#" color="primary" underline="hover" variant="body2">
                         Save for later
-                      </Link>
+                      </Link> */}
                     </Stack>
                   </Box>
 
                   <Box sx={{ textAlign: "right" }}>
                     <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
-                      ${item.price.toFixed(2)}
+                      ${item.productId.pricing.amount.toFixed(2)}
                     </Typography>
 
                     <FormControl size="small" sx={{ minWidth: 80 }}>
@@ -134,21 +216,21 @@ export default function ShoppingCart() {
           </Stack>
           
       {/* Bottom Actions */}
-      <Box sx={{ mt: 4, mb: 3 }}>
+   {!isLoading &&
+    products?.length> 0 &&
+       <Box sx={{ mt: 4, mb: 3 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Button startIcon={<ArrowBack />} variant="outlined" sx={{ textTransform: "none" }}>
+          <Button startIcon={<ArrowBack />} variant="outlined" onClick={()=> navigate("/")} sx={{ textTransform: "none" }}>
             Back to shop
           </Button>
 
-          <Link href="#" color="primary" underline="hover">
-            Remove all
-          </Link>
         </Stack>
       </Box>
+   }
            </Stack>
 
         {/* Order Summary Section */}
-           <Stack width={"28%"} height={"50%"} ml={3} sx={{            
+           <Stack width={{xs:"88%",md:"28%"} } mt={{xs:3, md:"none"}} height={"50%"} ml={3} sx={{            
              "&:hover": {
       transform: "translateY(-5px)",
       boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
@@ -229,12 +311,18 @@ export default function ShoppingCart() {
                 Checkout
               </Button>
 
-              <Stack direction="row" spacing={1} justifyContent="center" sx={{ mt: 2 }}>
-                <Box component="img" src="/placeholder.svg?height=24&width=40" alt="Visa" sx={{ height: 24 }} />
-                <Box component="img" src="/placeholder.svg?height=24&width=40" alt="Mastercard" sx={{ height: 24 }} />
-                <Box component="img" src="/placeholder.svg?height=24&width=40" alt="PayPal" sx={{ height: 24 }} />
-                <Box component="img" src="/placeholder.svg?height=24&width=40" alt="Apple Pay" sx={{ height: 24 }} />
-              </Stack>
+              <Stack
+  direction="row"
+  spacing={3}
+  justifyContent="center"
+  sx={{ mt: 3 }}
+>
+  <Box component="img" src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" sx={{ height: 20 }} />
+  <Box component="img" src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png" alt="Mastercard" sx={{ height: 24 }} />
+  <Box component="img" src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" sx={{ height: 20 }} />
+  <Box component="img" src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" sx={{ height: 24 }} />
+</Stack>
+
             </Stack>
           </Card>
            </Stack>
@@ -242,7 +330,7 @@ export default function ShoppingCart() {
 
 
       {/* Feature Cards */}
-      <Grid container spacing={2} sx={{ mt: 4,mb:2 }} gap={{md:5, lg:18}}>
+      <Grid container spacing={2} sx={{ mt: 4,mb:2 }} gap={{md:5, lg:18}} display={{xs:"none",md:"flex"}}>
         <Grid item xs={12} md={4}> 
           <Paper sx={{ p: 2, textAlign: "center",
              "&:hover": {

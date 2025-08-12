@@ -1,79 +1,11 @@
 "use client"
 
-import { Box, Typography, Card, CardContent, CardMedia, Chip, Stack } from "@mui/material"
-import Home5_1 from "../../assets/Home/recommended/1.png"
-import Home5_2 from "../../assets/Home/recommended/2.jpg"
-import Home5_3 from "../../assets/Home/recommended/3.png"
-import Home5_4 from "../../assets/Home/recommended/4.png"
-import Home5_5 from "../../assets/Home/recommended/5.png"
-import Home5_7 from "../../assets/Home/recommended/7.png"
-import Home5_8 from "../../assets/Home/recommended/8.png"
-import Home5_9 from "../../assets/Home/recommended/9.png"
+import { Box, Card, CardContent, CardMedia, Stack, Typography } from "@mui/material"
+import { useNavigate } from "react-router-dom"
 
-const Recommended = () => {
-  const products = [
-    {
-      id: 1,
-      image: `${Home5_1}`,
-      price: "$10.30",
-      description: "T-shirts with multiple colors, for men",
-    },
-    {
-      id: 2,
-      image: `${Home5_2}`,
-      price: "$10.30",
-      description: "Jeans, t-shirts for men blue color",
-    },
-    {
-      id: 3,
-      image: `${Home5_3}`,
-      price: "$12.50",
-      description: "Smart winter coat medium size",
-    },
-    {
-      id: 4,
-      image: `${Home5_5}`,
-      price: "$34.00",
-      description: "Suit bag for travel for men",
-    },
-    {
-      id: 5,
-      image: `${Home5_4}`,
-      price: "$99.00",
-      description: "Leather wallet",
-    },
-    {
-      id: 6,
-      image: `${Home5_9}`,
-      price: "$9.99",
-      description: "Canon camera black, 100% zoom",
-    },
-    {
-      id: 7,
-      image: `${Home5_7}`,
-      price: "$8.99",
-      description: "Headset for gaming with mic",
-    },
-    {
-      id: 8,
-      image: `${Home5_8}`,
-      price: "$10.30",
-      description: "Shirt watch silver color modern",
-    },
-    {
-      id: 9,
-      image: `${Home5_4}`,
-      price: "$10.30",
-      description: "Blue wallet for men leather material",
-    },
-    {
-      id: 10,
-      image: `${Home5_5}`,
-      price: "$80.95",
-      description: "Jeans bag for travel for men",
-    },
-  ]
-
+const Recommended = ({recommendedData, isLoading}) => {
+     const navigate = useNavigate();
+   
   return (
     <Box
       sx={{
@@ -115,9 +47,9 @@ const Recommended = () => {
           gap: 2,
         }}
       >
-        {products.map((product) => (
+        {isLoading? "loading" : recommendedData?.map((product) => (
           <Card
-            key={product.id}
+            key={product._id}
             sx={{
               width: "100%",
               height: "250px", // Fixed height for all cards
@@ -132,12 +64,13 @@ const Recommended = () => {
       boxShadow: "0 4px 10px rgba(0, 0, 0, 0.4)",
     }
             }}
-          >
+                onClick={()=> navigate(`/productDetails/${product._id}`)}
+ >
             <CardMedia
               sx={{
                 position: "relative",
                 mt:0.6,
-                ml:{xs:2, sm:8, md: 2.5, lg:5.8},
+                ml:{xs:4, sm:8, md: 2.5, lg:5.8},
                 top: 10,
                 height: "130px", // Fixed image height
                 width: "130px",
@@ -145,8 +78,8 @@ const Recommended = () => {
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
               }}
-              image={product.image}
-              title={product.description}
+              image={product.images.urls[0]}
+              title={product?.details.info}
             />
             <CardContent
               sx={{
@@ -170,7 +103,7 @@ const Recommended = () => {
                     lineHeight: 1.2,
                   }}
                 >
-                  {product.price}
+                  ${product?.pricing.amount}
                 </Typography>
                 <Typography
                   sx={{
@@ -185,7 +118,7 @@ const Recommended = () => {
                     fontWeight: 350,
                   }}
                 >
-                  {product.description}
+                  {product?.details.info}
                 </Typography>
               </Stack>
             </CardContent>

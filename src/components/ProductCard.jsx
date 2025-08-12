@@ -36,9 +36,10 @@ const ProductCard = ({ products, favorites, toggleFavorite, viewMode }) => {
         xs={12}
         sm={6}
         md={4}
-        key={product.id}
-        width={{ md: "30%", lg: "31%" }}
-        ml={1.4}
+        key={product._id}
+        width={{xs: "45%" , md: "30%", lg: "31%" }}
+        ml={{xs:0.8 , md: 1.4}}
+
       >
         <CardView product={product} />
       </Grid>

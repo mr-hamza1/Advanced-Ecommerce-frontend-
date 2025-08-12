@@ -29,6 +29,9 @@ import {
   Select,
   MenuItem,
   Radio,
+  TextField,
+  InputAdornment,
+  Button,
 } from "@mui/material"
 import {
   Favorite,
@@ -38,6 +41,10 @@ import {
   ViewModule,
   ViewList,
   NavigateNext,
+  FilterList,
+  GridView,
+  Close,
+  Search,
 } from "@mui/icons-material"
 import img1 from "../assets/Home/tech/1.jpg"
 import img2 from "../assets/Home/tech/2.jpg"
@@ -49,170 +56,130 @@ import ProductCard from "../components/ProductCard"
 import PriceRangeFilter from "../modules/Filtering/Range"
 import AllFiltering from "../modules/Filtering/AllFiltering"
 import CustomPagination from "../modules/pagination"
+import { useDispatch, useSelector } from "react-redux"
+import { useCategoriesQuery, useSearchProductsQuery } from "../redux/api/productApi"
+import { useErrors } from "../Hooks/Hook"
+import { useDebounce } from "../modules/Debouncing"
+import { useLocation, useParams } from "react-router-dom"
+import Recommended from "../modules/Home/Recommended"
+import { mobileCategoriesHome, mobileSearchWord } from "../redux/reducer/cartReducer"
 
-const categories = [
-  {
-    name: "Computers",
-    subcategories: ["Desktop", "Laptop", "Gaming PC", "All-in-One"],
-    expanded: true,
-  },
-  {
-    name: "Mobile accessories",
-    subcategories: ["Cases & Covers", "Chargers", "Screen Protectors", "Cables"],
-    expanded: false,
-  },
-  {
-    name: "Tablets",
-    subcategories: ["iPad", "Android Tablets", "Windows Tablets", "Accessories"],
-    expanded: false,
-  },
-  {
-    name: "Smart watch",
-    subcategories: ["Apple Watch", "Samsung Galaxy Watch", "Fitness Trackers", "Bands"],
-    expanded: false,
-  },
-]
 
-const brands = ["Apple", "Samsung", "Sony", "Microsoft", "Google", "OnePlus"]
 
 const conditons = ["Any", "Refurbished", "Brand new", "Old items"]
 
-const products = [
-  {
-    id: 1,
-    name: "iPhone 13 mini 128GB, Pink (Unlocked)",
-    price: 599.0,
-    originalPrice: 699.0,
-    rating: 4.5,
-    reviews: 128,
-    image: `${img1}`,
-    freeShipping: true,
-    description:
-      "A15 Bionic chip for lightning-fast performance. Advanced dual-camera system for incredible photos in any light. Cinematic mode adds shallow depth of field and shifts focus automatically.",
-  },
-  {
-    id: 7,
-    name: "iPhone 13 mini 128GB, Pink (Unlocked)",
-    price: 599.0,
-    originalPrice: 699.0,
-    rating: 4.5,
-    reviews: 128,
-    image: `${img1}`,
-    freeShipping: true,
-    description:
-      "A15 Bionic chip for lightning-fast performance. Advanced dual-camera system for incredible photos in any light. Cinematic mode adds shallow depth of field and shifts focus automatically.",
-  },
-  {
-    id: 2,
-    name: "Samsung Galaxy X6 5G",
-    price: 899.0,
-    originalPrice: 1199.0,
-    rating: 4.3,
-    reviews: 256,
-    image: `${img2}`,
-    freeShipping: true,
-    description:
-      "Pro-grade Camera with 108MP resolution. 8K Video recording capability. S Pen compatibility. Dynamic AMOLED 2X display with 120Hz refresh rate.",
-  },
-  {
-    id: 3,
-    name: "iPad Pro 11-inch (3rd generation)",
-    price: 799.0,
-    originalPrice: 899.0,
-    rating: 4.7,
-    reviews: 89,
-    image: `${img3}`,
-    freeShipping: true,
-    description:
-      "M1 chip delivers next-level performance. Stunning 11-inch Liquid Retina display with ProMotion, True Tone, and P3 wide color. Ultra Wide front camera with Center Stage.",
-  },
-  {
-    id: 4,
-    name: "MacBook Air 13-inch M2 Chip",
-    price: 1199.0,
-    originalPrice: 1299.0,
-    rating: 4.8,
-    reviews: 342,
-    image: `${img4}`,
-    freeShipping: true,
-    description:
-      "Supercharged by M2 chip. Up to 18 hours of battery life. Fanless design for silent operation. 13.6-inch Liquid Retina display with 500 nits of brightness.",
-  },
-  {
-    id: 5,
-    name: "Apple Watch Series 8 GPS 45mm",
-    price: 399.0,
-    originalPrice: 429.0,
-    rating: 4.6,
-    reviews: 167,
-    image: `${img5}`,
-    freeShipping: true,
-    description:
-      "Advanced health sensors including temperature sensing. Crash Detection. Water resistant to 50 meters. All-day battery life up to 18 hours.",
-  },
-  {
-    id: 6,
-    name: "Sony WH-1000XM4 Wireless Headphones",
-    price: 279.0,
-    originalPrice: 349.0,
-    rating: 4.4,
-    reviews: 523,
-    image: `${img6}`,
-    freeShipping: true,
-    description:
-      "Industry-leading noise canceling with Dual Noise Sensor technology. 30-hour battery life with quick charge. Touch sensor controls for pause, play, skip tracks.",
-  },
-  {
-    id: 6,
-    name: "Sony WH-1000XM4 Wireless Headphones",
-    price: 279.0,
-    originalPrice: 349.0,
-    rating: 4.4,
-    reviews: 523,
-    image: `${img6}`,
-    freeShipping: true,
-    description:
-      "Industry-leading noise canceling with Dual Noise Sensor technology. 30-hour battery life with quick charge. Touch sensor controls for pause, play, skip tracks.",
-  },
-  {
-    id: 7,
-    name: "Sony WH-1000XM4 Wireless Headphones",
-    price: 279.0,
-    originalPrice: 349.0,
-    rating: 4.4,
-    reviews: 523,
-    image: `${img6}`,
-    freeShipping: true,
-    description:
-      "Industry-leading noise canceling with Dual Noise Sensor technology. 30-hour battery life with quick charge. Touch sensor controls for pause, play, skip tracks.",
-  },
-  {
-    id: 8,
-    name: "Sony WH-1000XM4 Wireless Headphones",
-    price: 279.0,
-    originalPrice: 349.0,
-    rating: 4.4,
-    reviews: 523,
-    image: `${img6}`,
-    freeShipping: true,
-    description:
-      "Industry-leading noise canceling with Dual Noise Sensor technology. 30-hour battery life with quick charge. Touch sensor controls for pause, play, skip tracks.",
-  },
-  {
-    id: 9,
-    name: "Sony WH-1000XM4 Wireless Headphones",
-    price: 279.0,
-    originalPrice: 349.0,
-    rating: 4.4,
-    reviews: 523,
-    image: `${img6}`,
-    freeShipping: true,
-    description:
-      "Industry-leading noise canceling with Dual Noise Sensor technology. 30-hour battery life with quick charge. Touch sensor controls for pause, play, skip tracks.",
-  },
-]
 
 export default function ProductListing() {
+ const dispatch = useDispatch();
+
+  const [selectedBrands, setSelectedBrands] = useState([]);
+const [selectedCategory, setSelectedCategory] = useState("");
+const [selectedFeatured, setSelectedFeatured] = useState([]);
+const [mobileSearching, setMobileSearching] = useState("");
+
+const {mobileSearch} = useSelector((state)=> state.cartReducer)
+
+    const { search } = useLocation();
+  const params = new URLSearchParams(search);
+
+ 
+  const keyWord = params.get("keyword") || "";
+  const category = params.get("category") || "all";
+
+  const [searchCategory, setSearchCategory] = useState(category)
+  const [searchWord, setSearchWord] = useState(keyWord)
+
+
+useEffect(()=>{
+    if(selectedCategory){
+      setSearchCategory(selectedCategory)
+      setSearchWord()
+      // dispatch(mobileSearchWord(""))
+    }
+    else if(keyWord && category){
+      setSearchWord(keyWord)
+      setSearchCategory(category)
+    }
+    else{
+          setSearchCategory(category)
+    }
+  
+
+},[selectedCategory,keyWord, category])
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setSearchWord(mobileSearching);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [mobileSearching]);
+
+ 
+  const {minPrice, maxPrice} = useSelector((state) => state.cartReducer)
+   const [products, setProducts] = useState([])
+   const [recommendedData, setRecommendedData] = useState([])
+
+
+  const debouncedMinPrice = useDebounce(minPrice, 1000);
+  const debouncedMaxPrice = useDebounce(maxPrice, 1000)
+
+
+ 
+  const { data, isLoading, isError, error } =
+   useSearchProductsQuery({ minPrice: debouncedMinPrice,
+     maxPrice: debouncedMaxPrice, search: searchWord,
+      category: searchCategory, featureds: selectedFeatured, brands: selectedBrands })
+  useErrors([{ isError, error }])
+  console.log(data)
+  useEffect(() => {
+  if (data) {
+    setProducts(data.products);
+    setRecommendedData(data.recommended)
+  }
+}, [debouncedMinPrice, debouncedMaxPrice, searchWord, category, data, selectedBrands, selectedFeatured]);
+
+
+      const [categories, setCategories] = useState([])
+      const [brands, setBrands] = useState([])
+      const [featured, setFeatured] = useState([])
+
+const { data: data1, isLoading: isLoading1, isError: isError1, error: error1 } = useCategoriesQuery();
+useErrors([{ isError: isError1, error: error1 }]);
+
+console.log(data1)
+
+
+useEffect(() => {
+  if (data1?.categories) {
+    setCategories(data1.categories.categoriesByProductType);
+    setFeatured(data1.categories.categoriesByType);
+    dispatch(mobileCategoriesHome(data1.categories.categoriesByProductType))
+
+    // If category is "all", show all brands
+    if (category?.toLowerCase() === "all") {
+      setBrands(data1.categories.brands);
+    } 
+    // If category is one of the allowed ones, filter brands
+    else if (["electronics", "accessories", "fashion", "home"].includes(category?.toLowerCase())) {
+      const filteredBrands = data1.categories.brands.filter(
+        (b) => b.category?.toLowerCase() === category?.toLowerCase()
+      );
+      console.log(filteredBrands)
+      setBrands(filteredBrands);
+    } 
+    // Otherwise, no brands
+    else {
+      setBrands(data1.categories.brands);
+    }
+  }
+}, [data1, category]);
+
+
+
+
     // ✅ Pagination State
   const [page, setPage] = useState(1);
   const [viewMode, setViewMode] = useState("list")
@@ -223,6 +190,24 @@ export default function ProductListing() {
   const startIndex = (page - 1) * rowsPerPage;
   const paginatedProducts = products.slice(startIndex, startIndex + rowsPerPage);
   const [value, setValue] = useState("");
+
+
+const handleBrandChange = (brand) => {
+  setSelectedBrands((prev) =>
+    prev.includes(brand)
+      ? prev.filter((b) => b !== brand) // remove if already selected
+      : [...prev, brand]               // add if not selected
+  );
+};
+const handleFeaturedChange = (featured) => {
+  setSelectedFeatured((prev) =>
+    prev.includes(featured)
+      ? prev.filter((b) => b !== featured) // remove if already selected
+      : [...prev, featured]               // add if not selected
+  );
+};
+
+console.log(selectedBrands, selectedCategory, selectedFeatured)
 
   const handleChange = (event) => {
     setValue(event.target.value);
@@ -259,15 +244,183 @@ const handleListClick = () => setViewMode("list");
 
 
 
+
   return (
     <Box sx={{ backgroundColor: "#f7fafc",width:"100%", height: "100%", display: "flex" }}>
+       <Box sx={{display: {md:"none"}, backgroundColor: "#f7fafc" }} width={"100%"} mt={{xs:7.2, sm: 8}}
+       overflow={"hidden"}
+       >
+ <Box 
+      sx={{ 
+        display: { xs: 'block', sm: 'block', md: 'none' },
+        minHeight: '100vh',
+        width:"100%"
+
+      }}
+    >
+            <Box sx={{ p: 2, bgcolor: "white" }}>
+              <TextField
+                fullWidth
+                placeholder="Search"
+                variant="outlined"
+                value={mobileSearching}
+                onChange={(e)=> setMobileSearching(e.target.value)}
+                size="small"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search sx={{ color: "#999" }} />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    bgcolor: "#f5f5f5",
+                    borderRadius: 2,
+                  },
+                }}
+              />
+              {/* <Button onClick={()=> navigate(`/search?keyword=${search}`)}>Search</Button>t */}
+            </Box>
+      {/* Navigation Tabs */}
+      <Stack 
+        direction="row" 
+        sx={{ 
+          bgcolor: 'white',
+          borderBottom: '1px solid #e0e0e0',
+          overflowX: 'auto'
+        }}
+      >
+      {  data1?.categories.categoriesByProductType.map((tab, index) => (
+          <Box 
+            key={tab}
+            sx={{ 
+              px: 2, 
+              py: 0.5, 
+              borderBottom: index === 1 ? '2px solid #1976d2' : 'none',
+              color: index === 1 ? '#1976d2' : '#666',
+              fontWeight: index === 1 ? 600 : 400,
+              fontSize: '14px',
+              whiteSpace: 'nowrap',
+               color: "#2196f3",
+      bgcolor: "#eff2f4",
+      border: "1px solid #eff2f4",
+      borderRadius: "6px",
+      margin: "4px"
+            }}
+            onClick={()=> setSelectedCategory(tab)}
+          >
+            {tab}
+          </Box>
+        ))}
+      </Stack>
+
+      {/* Sort and Filter Controls */}
+      <Stack 
+        direction="row" 
+        justifyContent="space-between" 
+        alignItems="center"
+        sx={{ p: 2, bgcolor: 'white', borderBottom: '1px solid #e0e0e0' }}
+      >
+        <Stack direction="row" alignItems="center" spacing={2}>
+          <Typography variant="body2" color="text.secondary">
+            Sort: Newest
+          </Typography>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <FilterList fontSize="small" />
+            <Typography variant="body2" color="text.secondary">
+              Filter (3)
+            </Typography>
+          </Stack>
+        </Stack>
+      
+<Box sx={{ display: "flex", gap: 0.1}}>
+  <IconButton
+    size="small"
+onClick={handleGridClick}  
+  color={viewMode === "grid" ? "primary" : "default"}
+    sx={{
+      border: "1px solid #ddd",
+      borderRadius: "3px",
+      bgcolor:`${viewMode === "grid" ? "#eff2f4" : "default"}`,
+    }}
+  >
+    <ViewModule fontSize="small" />
+  </IconButton>
+
+  <IconButton
+    size="small"
+onClick={handleListClick} 
+   color={viewMode === "list" ? "primary" : "default"}
+    sx={{
+      border: "1px solid #ddd",
+      borderRadius: "3px",
+      bgcolor:`${viewMode === "list" ? "#eff2f4" : "default"}`,
+    }}
+  >
+    <ViewList fontSize="small" />
+  </IconButton>
+</Box>
+      </Stack>
+
+      {/* Filter Tags */}
+      <Stack 
+        direction="row" 
+        spacing={1} 
+        sx={{ p: 2, bgcolor: 'white', borderBottom: '1px solid #e0e0e0' }}
+      >
+        <Chip
+          label="Huawei" 
+          onDelete={() => {}} 
+          size="small"
+          deleteIcon={<Close />}
+        />
+        <Chip 
+          label="Apple" 
+          onDelete={() => {}} 
+          size="small"
+          deleteIcon={<Close />}
+        />
+        <Chip
+          label="64GB" 
+          onDelete={() => {}} 
+          size="small"
+          deleteIcon={<Close />}
+        />
+      </Stack>
+
+      {/* Product List */}
+      <Stack spacing={0}>
+{    isLoading? "loader" : 
+             <ProductCard viewMode={viewMode} products={paginatedProducts} favorites={favorites} toggleFavorite={toggleFavorite} />
+         }    
+           </Stack>
+
+           <Stack position={"relative"} right={-210} mt={2}>
+                <CustomPagination page={page} setPage={setPage}  rowsPerPage={rowsPerPage} setRowsPerPage={setRowsPerPage} totalPages={totalPages} />
+
+           </Stack>
+
+           <Stack position={"relative"} p={1}
+           mt={2}>
+           <Recommended recommendedData={recommendedData} isLoading={isLoading} />
+           </Stack>
+
+
+    </Box>
+           </Box>
+
+
+
       <Box
         height={"100%"}
         width={{md:"86%",lg:"1250px"}}
+
         sx={{
           position: "relative",
           left:{md:80, lg:140},
-          pt: 2.3
+          pt: 2.3,
+          display: {xs:"none",md:"block"} 
         }}
       >
                 {/* Breadcrumbs */}
@@ -290,57 +443,85 @@ const handleListClick = () => setViewMode("list");
             
                                 
               {/* Categories */}
-           <Divider  />
-         <AllFiltering title="Category">
-                 <List dense sx={{ p: 0 }}>
-                {categories.map((category) => (
-                  <Box key={category.name}>
-                    <ListItem button onClick={() => toggleCategory(category.name)} sx={{ px: 0, py: 0.5, cursor:"pointer", }}>
-                      <ListItemText primary={category.name} primaryTypographyProps={{ fontSize: "0.875rem" }} />
-                      </ListItem>
-                      
-                  </Box>
-                ))}
-              </List>
-         </AllFiltering>
-          
-           <Divider />
-         <AllFiltering title="Brands">
-              <List dense sx={{ p: 0 }}>
-                {brands.map((brand) => (
-                  <ListItem key={brand} sx={{ py: 0.10, px: 0 }}>
-                    <FormControlLabel
-                      control={<Checkbox size="small" />}
-                      label={brand}
-                      sx={{
-                        "& .MuiFormControlLabel-label": {
-                          fontSize: "0.875rem",
-                        },
-                      }}
-                    />
-                  </ListItem>
-                ))}
-              </List>
-         </AllFiltering>
+<Divider />
+<AllFiltering title="Category">
+  {categories.map((category) => {
+    const isSelected = selectedCategory === category;
 
-           <Divider />
-         <AllFiltering title="Featured">
-              <List dense sx={{ p: 0 }}>
-                {brands.map((brand) => (
-                  <ListItem key={brand} sx={{ py: 0.10, px: 0 }}>
-                    <FormControlLabel
-                      control={<Checkbox size="small" />}
-                      label={brand}
-                      sx={{
-                        "& .MuiFormControlLabel-label": {
-                          fontSize: "0.875rem",
-                        },
-                      }}
-                    />
-                  </ListItem>
-                ))}
-              </List>
-         </AllFiltering>
+    return (
+      <ListItem
+        key={category}
+        button
+        onClick={() => {
+          setSelectedCategory(category);
+          toggleCategory(category);
+        }}
+        sx={{
+          px: 0, 
+          pl: 1.5,
+          py: 0.5,
+          cursor: "pointer",
+          borderRadius:"5px",
+          backgroundColor: isSelected ? "white" : "transparent",
+          color: isSelected ? "black" : "inherit",
+          "&:hover": {
+            backgroundColor: isSelected ? "white" : "#f5f5f5",
+          },
+        }}
+      >
+        <ListItemText
+          primary={category}
+          primaryTypographyProps={{
+            fontSize: "0.875rem",
+            fontWeight: isSelected ? "bold" : "normal",
+          }}
+        />
+      </ListItem>
+    );
+  })}
+</AllFiltering>
+
+<Divider />
+
+<AllFiltering title="Brands">
+  {brands.map((i) => (
+    <ListItem key={i.brand} sx={{ py: 0.10, px: 0 }}>
+      <FormControlLabel
+        control={<Checkbox size="small" />}
+        label={i.brand}
+        onChange={() => handleBrandChange(i.brand)}
+        checked={selectedBrands.includes(i.brand)}
+        sx={{
+          "& .MuiFormControlLabel-label": {
+            fontSize: "0.875rem",
+          },
+        }}
+      />
+    </ListItem>
+  ))}
+</AllFiltering>
+
+
+<Divider />
+
+<AllFiltering title="Featured">
+  {featured.map((featured) => (
+    <ListItem key={featured} sx={{ py: 0.10, px: 0 }}>
+      <FormControlLabel
+        control={<Checkbox size="small" />}
+        label={featured}
+        onChange={() => handleFeaturedChange(featured)}
+        checked={selectedFeatured.includes(featured)}
+        sx={{
+          "& .MuiFormControlLabel-label": {
+            fontSize: "0.875rem",
+          },
+        }}
+      />
+    </ListItem>
+  ))}
+</AllFiltering>
+
 
               <Divider  />
 
@@ -481,9 +662,9 @@ onClick={handleListClick}
             
           
         </Box>
-
+      {    isLoading? "loader" : 
              <ProductCard viewMode={viewMode} products={paginatedProducts} favorites={favorites} toggleFavorite={toggleFavorite} />
-          </Stack>
+         } </Stack>
         </Stack>
             {/* ✅ Pagination */}
             <Stack width={"100%"} direction={"row"}  pt={4} pb={5}>

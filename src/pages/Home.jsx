@@ -1,38 +1,38 @@
 "use client"
 
-import { Avatar, Box, Button, List, ListItem, ListItemText, Stack, Typography, Grid } from "@mui/material"
+import { Avatar, Box, Button, List, ListItem, ListItemText, Stack, Typography } from "@mui/material"
 import Home1st from "../assets/Home/Home1st.png"
-import Home2_1 from "../assets/Home/Home2.1.png"
-import Home2_2 from "../assets/Home/Home2.2.png"
-import Home2_3 from "../assets/Home/Home2.3.png"
-import Home2_4 from "../assets/Home/Home2.4.png"
-import Home2_5 from "../assets/Home/Home2.5.png"
 import Home3_main from "../assets/Home/interior/main.jpg"
-import Home3_1 from "../assets/Home/interior/1.jpg"
-import Home3_2 from "../assets/Home/interior/2.jpg"
-import Home3_3 from "../assets/Home/interior/3.jpg"
-import Home3_4 from "../assets/Home/interior/4.jpg"
-import Home3_5 from "../assets/Home/interior/5.jpg"
-import Home3_6 from "../assets/Home/interior/6.jpg"
-import Home3_7 from "../assets/Home/interior/7.jpg"
-import Home3_8 from "../assets/Home/interior/8.jpg"
-import Home3_9 from "../assets/Home/interior/9.jpg"
 import Home4_main from "../assets/Home/interior/main2.png"
-import Home4_1 from "../assets/Home/tech/10.jpg"
-import Home4_2 from "../assets/Home/tech/1.jpg"
-import Home4_3 from "../assets/Home/tech/2.jpg"
-import Home4_4 from "../assets/Home/tech/9.jpg"
 
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useErrors } from "../Hooks/Hook"
 import Quotes from "../modules/Home/Quotes"
 import Recommended from "../modules/Home/Recommended"
 import Services from "../modules/Home/Services"
 import Suppliers from "../modules/Home/Suppliers"
+import { useLatestProductsQuery } from "../redux/api/productApi"
 import MobileHome from "./mobile/MobileHome"
+import { useNavigate } from "react-router-dom"
+import { useDispatch, useSelector } from "react-redux"
+import {userNotExist} from '../redux/reducer/userReducer'
+import toast from "react-hot-toast"
+import axios from "axios"
+
+
 
 const Home = () => {
   const [selectedIndex, setSelectedIndex] = useState(null)
+  const [dealsData, setDealsData] = useState([])
+  const [homeOutdoorData, setHomeOutdoorData] = useState([])
+  const [electronicsData, setElectronicsData] = useState([])
+  const [recommendedData, setRecommendedData] = useState([])
+
+    const {user, loading} = useSelector((state) => state.userReducer)
+  
+
+  const navigate = useNavigate();
 
   const categories = [
     "Automobiles",
@@ -45,36 +45,33 @@ const Home = () => {
     "Machinery tools",
     "More category",
   ]
+  const dispatch = useDispatch();
 
-  const dealsData = [
-    { name: "Smart watches", discount: "-25%", image: `${Home2_1}` },
-    { name: "Laptops", discount: "-15%", image: `${Home2_2}`  },
-    { name: "GoPro cameras", discount: "-40%", image: `${Home2_3}`  },
-    { name: "Headphones", discount: "-25%", image: `${Home2_4}`  },
-    { name: "Canon cameras", discount: "-25%", image: `${Home2_5}`  },
-  ]
+    const logoutHandler = async() => {
+      try {
+        const {data} = await axios.get(`${import.meta.env.VITE_SERVER}/api/v1/user/logout`, { withCredentials: true })
+        dispatch(userNotExist());
+        toast.success(data.message);
+      } catch (error) {
+        toast.error(error || "Something Went Wrong");
+      }
+    };
+  
 
-  const homeOutdoorData = [
-    { name: "Soft chairs", price: "19", image: `${Home3_1}` },
-    { name: "Kitchen dishes", price: "39", image: `${Home3_5}`  },
-    { name: "Kitchen appliance", price: "19", image: `${Home3_3}`  },
-    { name: "Kitchen mixer", price: "100", image: `${Home3_9}`  },
-    { name: "Blenders", price: "39", image: `${Home3_8}`  },
-    { name: "Home appliance", price: "19", image: `${Home3_6}`  },
-    { name: "Coffee maker", price: "19", image: `${Home3_7}`  },
-    { name: "Lamps", price: "19", image: `${Home3_6}`  },
-  ]
 
-  const electronicsData = [
-    { name: "Smart watches", price: "19", image: `${Home2_1}` },
-    { name: "Cameras", price: "89", image: `${Home2_4}` },
-    { name: "Headphones", price: "10", image: `${Home4_4}`},
-    { name: "Tablet", price: "90", image: `${Home4_3}`},
-    { name: "Gaming set", price: "35", image: `${Home2_3}` },
-    { name: "Laptops & PC", price: "340", image: `${Home2_2}`},
-    { name: "Smartphones", price: "19", image: `${Home4_2}`},
-    { name: "Electric kettle", price: "240", image: `${Home4_1}` },
-  ]
+   const { data, isLoading, isError, error } = useLatestProductsQuery()
+  useErrors([{ isError, error }])
+  
+
+  useEffect(()=>{
+    if(data?.products){
+      setDealsData(data.products.deals)
+      setElectronicsData(data.products.electronics)
+      setHomeOutdoorData(data.products.home)
+      setRecommendedData(data.products.recommendedFashion)
+    }
+
+  },[data])
 
   return (
     <Box  width={"100%"}> 
@@ -205,7 +202,7 @@ const Home = () => {
               }}
               p={1}
             >
-              <Box display={"flex"} alignItems={"center"} top={-10} position={"relative"}>
+     {     !user?._id?                  <Box display={"flex"} alignItems={"center"} top={-10} position={"relative"}>
                 <Avatar
                   sx={{
                     width: 40,
@@ -223,10 +220,47 @@ const Home = () => {
                 <p>
                   Hi, user <br /> let's get started
                 </p>
+              </Box> : 
+                  <Box display={"flex"} alignItems={"center"} top={-10} position={"relative"}>
+                <Avatar
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    backgroundColor: "#1976d2",
+                    mr:1,
+                               "&:hover": {
+      transform: "translateY(-5px)",
+      boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+    }
+                  }}
+                  src={user?.photo}
+                />
+                <p>
+                  Hi, {user?.name.split(" ")[0]} <br /> let's get started
+                </p>
               </Box>
-              <Box top={-10} position={"relative"}>
-                <Button variant="contained" size="small" fullWidth sx={{ textTransform: "none", mb: 1 }}>
+              }
+  {     !user?._id?       <Box top={-10} position={"relative"}>
+                <Button variant="contained" size="small" 
+                                  onClick={() => navigate(`/Login`)}
+                fullWidth sx={{ textTransform: "none", mb: 1 }}>
                   Join now
+                </Button>
+                <Button
+                  variant="contained"
+                  size="small"
+                  color="black"
+                  onClick={() => navigate(`/Login`)}
+                  mb={2}
+                  fullWidth
+                  sx={{ textTransform: "none", backgroundColor: "rgba(255, 255, 255, 1)" }}
+                >
+                  Log in
+                </Button>
+              </Box> :
+                          <Box top={-10} position={"relative"}>
+                <Button variant="contained" size="small" fullWidth sx={{ textTransform: "none", mb: 1 }}>
+                  Get free cupons
                 </Button>
                 <Button
                   variant="contained"
@@ -235,10 +269,12 @@ const Home = () => {
                   mb={2}
                   fullWidth
                   sx={{ textTransform: "none", backgroundColor: "rgba(255, 255, 255, 1)" }}
+                onClick={logoutHandler}
                 >
-                  Log in
+                  Log out
                 </Button>
               </Box>
+              }
             </Box>
 
             {/* Promo Card */}
@@ -345,16 +381,18 @@ const Home = () => {
              </Stack>
              </Stack>
              <Stack direction={"row"} width={"75%"} >
-               {dealsData.map((item, index) => (
+               {isLoading?  "hi": 
+               dealsData.map((item, index) => (
                   <Box textAlign={"center"} gap={2} borderLeft={"2px solid #e0e0e0"} width={"25%"} pt={2} pb={2}
                   sx={{           "&:hover": {
       transform: "translateY(-5px)",
       boxShadow: "0 4px 10px rgba(0, 0, 0, 0.4)",
     }}}
+       onClick={()=> navigate(`/productDetails/${item._id}`)}
                   >
                     <Box
                       component="img"
-                      src={item.image}
+                      src={item.images.urls[0]}
                       alt={item.name}
                       sx={{
                         width: 120,
@@ -381,7 +419,7 @@ const Home = () => {
                             cursor: "default"           // avoids hover pointer
                           }}
                         >
-                          {item.discount}
+                          {item.discount}%
                         </Button>
 
          
@@ -438,24 +476,28 @@ const Home = () => {
 
                  <Stack width={"75%"}>
                   <Stack direction={"row"} width={"100%"} >
-                    {homeOutdoorData.map((item, index) => (
+                    {isLoading?  "hi": 
+                    homeOutdoorData.map((item, index) => (
           index<4 &&
                   <Box width={"25%"} borderLeft={"2px solid #e0e0e0"}  borderBottom={"2px solid #e0e0e0"}
                   sx={{                    "&:hover": {
       transform: "translateY(5px)",
       boxShadow: "0 4px 10px rgba(0, 0, 0, 0.4)",
-    }}}>
+    }}}
+           onClick={()=> navigate(`/productDetails/${item._id}`)}
+
+    >
                      <Box >
                         <Typography variant="body1" sx={{ fontSize: "14px", fontWeight: 400, mb: 0.5 , mt: 1.5 ,ml: 2 }}>
                       {item.name}
                     </Typography>
                     <Typography variant="body2" sx={{ fontSize: "12px", fontWeight: 400, color: "text.secondary", ml :2 }}>
-                      From <br /> USD {item.price}
+                      From <br /> USD {item.pricing.amount}
                     </Typography>
                      </Box>
                     <Box
                       component="img"
-                      src={item.image}
+                      src={item.images.urls[0]}
                       alt={item.name}
                       sx={{
                         width: 60,
@@ -474,23 +516,26 @@ const Home = () => {
               ))}
                   </Stack>
                                    <Stack direction={"row"} width={"100%"} >
-                    {homeOutdoorData.map((item, index) => (
+                    {isLoading?  "hi": homeOutdoorData.map((item, index) => (
           index>=4 && 
                   <Box width={"25%"} borderLeft={"2px solid #e0e0e0"} sx={{                    "&:hover": {
       transform: "translateY(5px)",
       boxShadow: "0 4px 10px rgba(0, 0, 0, 0.4)",
-    }}}  >
+    }}} 
+           onClick={()=> navigate(`/productDetails/${item._id}`)}
+
+     >
                      <Box >
                         <Typography variant="body1" sx={{ fontSize: "14px", fontWeight: 400, mb: 0.5 , mt: 1.5 ,ml: 2 }}>
                       {item.name}
                     </Typography>
                     <Typography variant="body2" sx={{ fontSize: "12px", fontWeight: 400, color: "text.secondary", ml :2 }}>
-                      From <br /> USD {item.price}
+                      From <br /> USD {item.pricing.amount}
                     </Typography>
                      </Box>
                     <Box
                       component="img"
-                      src={item.image}
+                      src={item.images.urls[0]}
                       alt={item.name}
                       sx={{
                         width: 60,
@@ -557,25 +602,26 @@ const Home = () => {
 
                  <Stack width={"75%"}>
                   <Stack direction={"row"} width={"100%"} >
-                    {electronicsData.map((item, index) => (
+                    {isLoading?  "hi": electronicsData.map((item, index) => (
           index<4 &&
                   <Box width={"25%"} borderLeft={"2px solid #e0e0e0"}  borderBottom={"2px solid #e0e0e0"}
                   sx={{                    "&:hover": {
       transform: "translateY(5px)",
       boxShadow: "0 4px 10px rgba(0, 0, 0, 0.4)",
     }}}
-                  >
+                         onClick={()=> navigate(`/productDetails/${item._id}`)}
+>
                      <Box >
                         <Typography variant="body1" sx={{ fontSize: "14px", fontWeight: 400, mb: 0.5 , mt: 1.5 ,ml: 2 }}>
                       {item.name}
                     </Typography>
                     <Typography variant="body2" sx={{ fontSize: "12px", fontWeight: 400, color: "text.secondary", ml :2 }}>
-                      From <br /> USD {item.price}
+                      From <br /> USD {item.pricing.amount}
                     </Typography>
                      </Box>
                     <Box
                       component="img"
-                      src={item.image}
+                      src={item.images.urls[0]}
                       alt={item.name}
                       sx={{
                         width: 60,
@@ -594,25 +640,26 @@ const Home = () => {
               ))}
                   </Stack>
                                    <Stack direction={"row"} width={"100%"} >
-                    {electronicsData.map((item, index) => (
+                    {isLoading?  "hi": electronicsData.map((item, index) => (
           index>=4 && 
                   <Box width={"25%"} borderLeft={"2px solid #e0e0e0"} sx={{
                    "&:hover": {
       transform: "translateY(5px)",
       boxShadow: "0 4px 10px rgba(0, 0, 0, 0.4)",
     }
-                  }}  >
+                  }}        onClick={()=> navigate(`/productDetails/${item._id}`)}
+ >
                      <Box >
                         <Typography variant="body1" sx={{ fontSize: "14px", fontWeight: 400, mb: 0.5 , mt: 1.5 ,ml: 2 }}>
                       {item.name}
                     </Typography>
                     <Typography variant="body2" sx={{ fontSize: "12px", fontWeight: 400, color: "text.secondary", ml :2 }}>
-                      From <br /> USD {item.price}
+                      From <br /> USD {item.pricing.amount}
                     </Typography>
                      </Box>
                     <Box
                       component="img"
-                      src={item.image}
+                      src={item.images.urls[0]}
                       alt={item.name}
                       sx={{
                         width: 60,
@@ -634,7 +681,7 @@ const Home = () => {
 
 
              <Quotes />
-             <Recommended />
+             <Recommended recommendedData={recommendedData} isLoading={isLoading} />
              <Services />
              <Suppliers />
 
@@ -642,7 +689,7 @@ const Home = () => {
         </Box>
       </Box>
     </Box>
-    <MobileHome  Home1st={Home1st} dealsData={dealsData}/>
+    <MobileHome  Home1st={Home1st} dealsData={dealsData} isLoading={isLoading} electronicsData={electronicsData} recommendedData={recommendedData} homeOutdoorData={homeOutdoorData}  />
     </Box> 
   )
 }

@@ -1,8 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Slider, TextField, Button, Box, Typography } from "@mui/material";
+import { useDispatch } from "react-redux";
+import { filteringMaxPrice, filteringMinPrice } from "../../redux/reducer/cartReducer";
 
 export default function PriceRangeFilter() {
-  const [value, setValue] = useState([0, 999999]);
+  const dispatch = useDispatch()
+
+  const [value, setValue] = useState([0, 9999]);
+
+  
 
   const handleSliderChange = (event, newValue) => {
     setValue(newValue);
@@ -18,6 +24,11 @@ export default function PriceRangeFilter() {
     console.log("Applied price range:", value);
   };
 
+  useEffect(()=>{
+     dispatch(filteringMinPrice(value[0]))
+     dispatch(filteringMaxPrice(value[1]))
+  },[value])
+
   return (
     <Box >
 
@@ -25,7 +36,7 @@ export default function PriceRangeFilter() {
       <Slider
         value={value}
         min={0}
-        max={1000000}
+        max={9999}
         onChange={handleSliderChange}
         valueLabelDisplay="auto"
         sx={{

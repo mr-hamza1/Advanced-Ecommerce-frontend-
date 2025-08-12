@@ -12,19 +12,28 @@ import {
   IconButton,
 } from "@mui/material";
 import { Favorite, FavoriteBorder } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom"
+
+
 const GridView = ({ products, favorites, toggleFavorite, viewMode }) => {
+  
+  const navigate =  useNavigate()
+
   return (
-<Stack spacing={2} direction="column">
+<Stack spacing={2} direction="column" p={1} width={"100%"} >
             {products.map((product) => (
-              <Stack key={product.id} height="230px" sx={{                    
+              <Stack key={product._id} height="230px" width={"100%"} sx={{                    
                 "&:hover": {
       transform: "translateY(-5px)",
       boxShadow: "0 4px 10px rgba(0, 0, 0, 0.25)",
-    }}}>
-                <Card
+    }}}
+    onClick={()=>(navigate(`/productDetails/${product._id}`))}
+    >
+                <Card 
                   sx={{
                     display: "flex",
                     height: "100%",
+                    width:{md: "810px" , lg: "990px"},
                     p: 2,
                     pb: 1,
                     backgroundColor: "white",
@@ -38,15 +47,15 @@ const GridView = ({ products, favorites, toggleFavorite, viewMode }) => {
                   <CardMedia
                     component="img"
                     sx={{
-                      width: 190,
-                      height: 190,
+                      width: {xs:150, md: 190},
+                      height: {xs:150,md: 190},
                       objectFit: "contain",
                       mr: 2,
                       backgroundColor: "#f9f9f9",
                       borderRadius: 1,
                     }}
-                    image={product.image}
-                    alt={product.name}
+                    image={product?.images?.urls[0]}
+                    alt={product?.name}
                   />
 
                   {/* Product Details */}
@@ -65,19 +74,19 @@ const GridView = ({ products, favorites, toggleFavorite, viewMode }) => {
                               "&:hover": { textDecoration: "underline" },
                             }}
                           >
-                            {product.name}
+                            {product?.name}
                           </Typography>
 
                           {/* Price */}
                           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
                             <Typography variant="h5" sx={{ color: "#d32f2f", fontWeight: "bold", fontSize: "1.25rem" }}>
-                              ${product.price.toFixed(2)}
+                              ${product?.pricing?.amount.toFixed(2)- product?.discount}
                             </Typography>
                             <Typography
                               variant="body2"
                               sx={{ textDecoration: "line-through", color: "text.secondary", fontSize: "0.875rem" }}
                             >
-                              ${product.originalPrice.toFixed(2)}
+                              ${product?.pricing?.amount.toFixed(2)}
                             </Typography>
                             {product.freeShipping && (
                               <Chip
@@ -90,9 +99,9 @@ const GridView = ({ products, favorites, toggleFavorite, viewMode }) => {
 
                           {/* Rating */}
                           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-                            <Rating value={product.rating} precision={0.1} readOnly size="small" />
+                            <Rating value={product?.rating?.average} precision={0.1} readOnly size="small" />
                             <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.8rem" }}>
-                              ({product.reviews})
+                              ({product?.rating?.count})
                             </Typography>
                           </Box>
 
@@ -109,7 +118,7 @@ const GridView = ({ products, favorites, toggleFavorite, viewMode }) => {
                               overflow: "hidden",
                             }}
                           >
-                            {product.description}
+                            {product?.details?.info}
                           </Typography>
 
                           <Typography color="#046dff" mt={2}>

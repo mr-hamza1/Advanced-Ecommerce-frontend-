@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -25,6 +25,9 @@ import {
 import { Check } from "@mui/icons-material";
 
 import img1 from "../assets/Home/recommended/1.png"
+import { useNavigate, useParams } from "react-router-dom";
+import { useProductDetailsQuery } from "../redux/api/productApi";
+import { useErrors } from "../Hooks/Hook";
 
 // TabPanel Component
 function TabPanel({ children, value, index, ...other }) {
@@ -51,15 +54,12 @@ const relatedProducts = [
   { id: 6, name: "Xiaomi Redmi 8 Original", price: "$32.00-$40.00", image: "/placeholder.svg?text=Product6" },
 ];
 
-const recommendedProducts = [
-  { id: 1, name: "Men Blazers Sets Elegant Formal", price: "$7.00 - $39.50", image: "/placeholder.svg?text=Blazer", color: "#2c5aa0" },
-  { id: 2, name: "Men Shirt Sleeve Polo Contrast", price: "$7.00 - $39.50", image: "/placeholder.svg?text=Polo", color: "#4a90a4" },
-  { id: 3, name: "Apple Watch Series Space Gray", price: "$7.00 - $39.50", image: "/placeholder.svg?text=Watch", color: "#8b4513" },
-  { id: 4, name: "Basketball Crew Socks Long Stuff", price: "$7.00 - $39.50", image: "/placeholder.svg?text=Socks", color: "#1976d2" },
-  { id: 5, name: "New Summer Men's Casual T-Shirts", price: "$7.00 - $39.50", image: "/placeholder.svg?text=TShirt", color: "#3f51b5" },
-];
 
-export default function ProductDescription() {
+export default function ProductDescription({like, related}) {
+
+    const navigate = useNavigate();
+   console.log(like)
+
   const [tabValue, setTabValue] = useState(0);
   const handleTabChange = (event, newValue) => setTabValue(newValue);
 
@@ -140,15 +140,23 @@ export default function ProductDescription() {
           borderRadius: "6px", }} p={2} height={"20%"}>
           <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>You may like</Typography>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-            {recommendedProducts.map((p) => (
-              <Box sx={{ display: "flex", p: 1.5, }}>
+            {like.map((p) => (
+              <Box 
+               onClick={()=> navigate(`/productDetails/${p._id}`)}
+              sx={{     
+                display: "flex", p: 1.5, 
+                               "&:hover": {
+      transform: "translateY(5px)",
+      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.4)",
+    }}}
+              >
                 <Box sx={{ width: 60, height: 60, border:"1px solid rgba(222, 226, 231, 1)",
                  borderRadius: "6px", mr: 1.5, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <img src={img1} alt={p.name} style={{ width: "80%", height: "80%", objectFit: "contain" }} />
+                  <img src={p.images.urls[0]} alt={p.name} style={{ width: "80%", height: "80%", objectFit: "contain" }} />
                 </Box>
                 <Box sx={{ flex: 1 }}>
                   <Typography variant="body2" sx={{ mb: 0.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{p.name}</Typography>
-                  <Typography variant="body2" color="rgba(139, 150, 165, 1)" sx={{ fontWeight: 600 }}>{p.price}</Typography>
+                  <Typography variant="body2" color="rgba(139, 150, 165, 1)" sx={{ fontWeight: 600 }}>{p.pricing.amount}</Typography>
                 </Box>
               </Box>
             ))}
@@ -175,8 +183,9 @@ export default function ProductDescription() {
     </Typography>
 
     <Stack direction="row" alignItems="center" spacing={2} width="100%" sx={{
-            }}>
-      {relatedProducts.map((p, index) => (
+                     overflowX: "auto", pb: 1 ,
+   }}>
+      {related.map((p, index) => (
         <Stack
           key={index}
           alignItems="center"
@@ -191,6 +200,8 @@ export default function ProductDescription() {
     }
 
           }}
+                         onClick={()=> navigate(`/productDetails/${p._id}`)}
+
         >
          <Box bgcolor={"rgba(238, 238, 238, 1)"} sx={{  
            border: "1px solid #eee",
@@ -198,7 +209,7 @@ export default function ProductDescription() {
             }} width={"100%"}  display={"flex"} alignContent={"center"} justifyContent={"center"}>
            <Box
             component="img"
-            src={img1}   // use p.image if available
+            src={p.images.urls[0]}  // use p.image if available
             alt={p.name}
             sx={{ width: 120, height: 150, objectFit: "cover", borderRadius: "4px", p:0.5 }}
           />
@@ -208,7 +219,7 @@ export default function ProductDescription() {
               {p.name}
             </Typography>
             <Typography variant="body2" color="rgba(139, 150, 165, 1)" sx={{ fontWeight: 600 }}>
-              {p.price}
+              {p.pricing.amount}
             </Typography>
           </Stack>
         </Stack>

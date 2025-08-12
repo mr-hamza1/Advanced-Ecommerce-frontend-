@@ -1,29 +1,99 @@
 import { Box, AppBar, Toolbar, Typography , InputBase, FormControl, InputLabel, Select, MenuItem, Stack, Tooltip,
    IconButton,
+   Menu,
+   Badge,
 } from "@mui/material"
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag"; // or your icon of choice
-import { useState } from "react";
-import {Person as PersonIcon,} from "@mui/icons-material"
+import { useEffect, useState } from "react";
+import {Login, Logout, Person as PersonIcon, Settings, ShoppingBag,} from "@mui/icons-material"
 import ChatIcon from '@mui/icons-material/Chat';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import MenuIcon from '@mui/icons-material/Menu';
 import HeaderBottom from "./HeaderBottom";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import MenuDrawer from "../modules/Home/Menu";
+import { useCartPrductsQuery, useCategoriesQuery } from "../redux/api/productApi";
+import { useErrors } from "../Hooks/Hook";
+import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { userNotExist } from "../redux/reducer/userReducer";
 
 
 
 const Header = () => {
+
+    const {user, loading} = useSelector((state) => state.userReducer)
+  const dispatch = useDispatch();
+
+    const [products, setProducts] = useState([]);
+    
+          let { data: data1, isLoading: isLoading1, isError: isError1, error: error1 } = useCartPrductsQuery( { 
+            userId: user?._id,
+            });
+      useErrors([{ isError: isError1, error: error1 }]);
+    
+          useEffect(() => {
+          if (data1?.cart) {
+           setProducts(data1.productLength)
+          }
+        }, [data1, products])
+
    
     const [search , setSearch] = useState("") 
     const [open , setOpen] = useState(false) 
-    const [categorySearch, setCategorySearch] = useState("")
+    const [categorySearch, setCategorySearch] = useState("all")
     const navigate = useNavigate();
+      const [anchorEl, setAnchorEl] = useState(null);
+  const openProfile = Boolean(anchorEl);
+
+        const [categories, setCategories] = useState([])
+  
+  const { data, isLoading, isError, error } = useCategoriesQuery();
+  useErrors([{ isError, error }]);
+  
+  
+  useEffect(() => {
+    if (data?.categories) {
+      setCategories(data.categories.categoriesByType);
+    }
+  }, [data]);
+
+  const handleClick = (event) => {
+    if(!user?._id){
+      navigate("/Login")
+    }
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
     const handleDrawerToggle = ()=>{
       setOpen(true)
     }
+
+    const handleSearch = () =>{
+      if(search)
+      navigate(`/search?keyword=${search}&category=${categorySearch}`)
+    }
+
+    
+  const logoutHandler = async() => {
+    try {
+      const {data} = await axios.get(`${import.meta.env.VITE_SERVER}/api/v1/user/logout`, { withCredentials: true })
+      console.log(data)
+      dispatch(userNotExist());
+      toast.success(data.message);
+    } catch (error) {
+      console.log(error)
+      toast.error(error || "Something Went Wrong");
+    }
+    handleClose();
+  };
+
 
   return (
     <Box >
@@ -182,31 +252,36 @@ const Header = () => {
                                alignItems: "center",
                              }}
                              >
-                               <Box  sx={{
-                               width: {md:"120px",lg:"130px",},
-                               height: "60px",
-                               border: "none"
-                               }}>
-                               <FormControl fullWidth variant="standard">
-                                 <InputLabel id="dropdown-label"> All category</InputLabel>
-                                 <Select
-                                   labelId="dropdown-label"
-                                   value={categorySearch}
-                                   onChange={(e) => setCategorySearch(e.target.value)}
-                                   disableUnderline
-                                   sx={{
-                                     fontSize: "14px",
-                                     height: "19px",
-                                     color: "black",
-                                   }}
-                                 >
-                                   <MenuItem value="option1">Option 1</MenuItem>
-                                   <MenuItem value="option2">Option 2</MenuItem>
-                                   <MenuItem value="option3">Option 3</MenuItem>
-                                 </Select>
-                             </FormControl>
+<Box
+  sx={{
+    width: { md: "120px", lg: "130px" },
+    height: "19px", // match Select height
+    border: "none",
+  }}
+>
+  <FormControl fullWidth variant="standard">
+    <Select
+      labelId="dropdown-label"
+      value={categorySearch}
+      onChange={(e) => setCategorySearch(e.target.value)}
+      disableUnderline
+      sx={{
+        fontSize: "16px",
+        height: "19px",
+        color: "black",
+      }}
+    >
+      <MenuItem value="all">All categories</MenuItem>
+      {!isLoading &&
+        categories?.map((item) => (
+          <MenuItem key={item} value={item}>
+            {item.charAt(0).toUpperCase() + item.slice(1)}
+          </MenuItem>
+        ))}
+    </Select>
+  </FormControl>
+</Box>
 
-                               </Box>
 
                             </Box>
                           <Box 
@@ -222,7 +297,7 @@ const Header = () => {
 
                              }}
                              component={"button"}
-                             onClick={()=> navigate("/search")}
+                             onClick={handleSearch}
                              >
                                 Search
                         
@@ -252,9 +327,73 @@ const Header = () => {
                                alignItems: "center"
                             }}
                             >
-                                 <IconButton>
-                                     <PersonIcon/>
-                                 </IconButton>                                
+                              
+            {
+              user?._id? (
+
+
+                <> 
+                 <Tooltip title="Profile">
+              <IconButton color="#757575" onClick={handleClick} >
+                  <PersonIcon/>
+                {/* { user.photo? <Avatar src={user.photo}  sx={{border:"3px solid white"}} /> : <AccountCircleIcon /> } */}
+              </IconButton>
+            </Tooltip>            
+            {/* Profile Dropdown Menu */}
+            <Menu
+            anchorEl={anchorEl}
+            open={openProfile}
+            onClose={handleClose}
+            PaperProps={{
+              elevation: 3,
+              sx: {
+                mt: 1.5,
+                minWidth: 220,
+                borderRadius: 2,
+                p: 1,
+              },
+            }}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            transformOrigin={{ vertical: "top", horizontal: "right" }}
+          >
+            <Typography p={2}>{user?.email.trim(4,"....")}</Typography>
+            {/* Admin Panel Link */}
+            {user?.role === "admin" && (
+              <MenuItem component={Link} to="/admin/product" onClick={handleClose}>
+                <Settings sx={{ mr: 2 }} />
+                Admin Panel
+              </MenuItem>
+            )}
+
+            {/* Orders */}
+            <MenuItem component={Link} to="/" onClick={handleClose}>
+              <ShoppingBag sx={{ mr: 2 }} />
+              Orders
+            </MenuItem>
+
+          
+
+            {/* Logout */}
+            <MenuItem onClick={logoutHandler}>
+              <Logout sx={{ mr: 2 }} color={"error"} />
+              LogOut
+            </MenuItem>
+          </Menu>
+                </>
+      
+              )
+              :
+              (
+                <Box display="flex" alignItems="center" gap={2}>
+                  <Tooltip title="Login">
+                    <IconButton color="#757575"  component={Link} to="/Login">
+                  <PersonIcon/>
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              ) 
+            }
+                                                           
                                  <Typography  variant="subtitle1" fontSize={"10px"}>Profile</Typography>
                             </Stack>
 
@@ -294,9 +433,22 @@ const Header = () => {
                                alignItems: "center"
                             }}
                             >
-                                 <IconButton onClick={()=> navigate("/cart")}>
-                                     <ShoppingCartIcon/>
-                                 </IconButton>
+                                   <IconButton onClick={() => navigate("/cart")}>
+   {user?._id?   <Badge
+    badgeContent={isLoading ? 0 : products}
+    sx={{
+      "& .MuiBadge-badge": {
+        backgroundColor: "rgb(0, 181, 23)",
+        color: "white",
+      },
+    }}
+  >
+    <ShoppingCartIcon />
+  </Badge>  :
+      <ShoppingCartIcon />
+  }
+    </IconButton>
+
                                  <Typography width={"40px"}  variant="subtitle1" fontSize={"10px"}>My cart</Typography>
                             </Stack>
 
@@ -304,8 +456,91 @@ const Header = () => {
 
                          
                          <Box flexGrow={1} /> 
-                         <MobileIcons />
-            </Toolbar>
+
+                        {/* mobile */}
+ <Box
+        gap={1}
+        sx={{
+          display: { xs: "flex", md: "none" },
+          justifyContent: "center",
+          alignItems: "center",
+          position: "relative",
+          top: 3,
+          right: -5,
+        }}
+      >
+        <Tooltip title="Cart">
+          <IconButton component={Link} to="/cart">
+            <ShoppingCartIcon sx={{ fontSize: 24 }} />
+          </IconButton>
+        </Tooltip>
+      
+                   {
+              user?._id? (
+
+
+                <> 
+                 <Tooltip title="Profile">
+              <IconButton color="#757575" onClick={handleClick} >
+                  <PersonIcon/>
+                {/* { user.photo? <Avatar src={user.photo}  sx={{border:"3px solid white"}} /> : <AccountCircleIcon /> } */}
+              </IconButton>
+            </Tooltip>            
+            {/* Profile Dropdown Menu */}
+            <Menu
+            anchorEl={anchorEl}
+            open={openProfile}
+            onClose={handleClose}
+            PaperProps={{
+              elevation: 3,
+              sx: {
+                mt: 1.5,
+                minWidth: 220,
+                borderRadius: 2,
+                p: 1,
+              },
+            }}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            transformOrigin={{ vertical: "top", horizontal: "right" }}
+          >
+            <Typography p={2}>{user?.email.trim(4,"....")}</Typography>
+            {/* Admin Panel Link */}
+            {user?.role === "admin" && (
+              <MenuItem component={Link} to="/admin/product" onClick={handleClose}>
+                <Settings sx={{ mr: 2 }} />
+                Admin Panel
+              </MenuItem>
+            )}
+
+            {/* Orders */}
+            <MenuItem component={Link} to="/orders" onClick={handleClose}>
+              <ShoppingBag sx={{ mr: 2 }} />
+              Orders
+            </MenuItem>
+
+          
+
+            {/* Logout */}
+            <MenuItem onClick={logoutHandler}>
+              <Logout sx={{ mr: 2 }} color={"error"} />
+              Log Out
+            </MenuItem>
+          </Menu>
+                </>
+      
+              )
+              :
+              (
+                <Box display="flex" alignItems="center" gap={2}>
+                  <Tooltip title="Login">
+                    <IconButton color="#757575"  component={Link} to="/Login">
+                  <PersonIcon/>
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              ) 
+            }
+      </Box>            </Toolbar>
 
         </AppBar>
     </Box>
@@ -320,34 +555,5 @@ const Header = () => {
 }
 
 
-const MobileIcons = ()=>{
-  return(
-
-      <Box
-        gap={1}
-        sx={{
-          display: { xs: "flex", md: "none" },
-          justifyContent: "center",
-          alignItems: "center",
-          position: "relative",
-          top: 3,
-          right: -5,
-        }}
-      >
-        <Tooltip title="Cart">
-          <IconButton>
-            <ShoppingCartIcon sx={{ fontSize: 24 }} />
-          </IconButton>
-        </Tooltip>
-      
-        <Tooltip title="Profile">
-          <IconButton>
-            <PersonIcon sx={{ fontSize: 24 }} />
-          </IconButton>
-        </Tooltip>
-      </Box>
-      
-  )
-}
 
 export default Header

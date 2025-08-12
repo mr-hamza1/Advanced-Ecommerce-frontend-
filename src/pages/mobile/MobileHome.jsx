@@ -20,35 +20,57 @@ import {
   ShoppingCart as ShoppingCartIcon,
   Person as PersonIcon,
   ShoppingBag as ShoppingBagIcon,
+  Category,
 } from "@mui/icons-material"
 import quotes from "../../assets/Home/quotes.png"
 import Recommended from "../../modules/Home/Recommended"
-
-const categories = [
-  { id: 1, name: "Electronics", image: "https://example.com/electronics.jpg" },
-  { id: 2, name: "Fashion", image: "https://example.com/fashion.jpg" },
-  { id: 3, name: "Home & Kitchen", image: "https://example.com/home-kitchen.jpg" },
-  { id: 4, name: "Beauty & Personal Care", image: "https://example.com/beauty.jpg" },
-  { id: 5, name: "Sports & Outdoors", image: "https://example.com/sports.jpg" },
-  { id: 6, name: "Books", image: "https://example.com/books.jpg" },
-  { id: 7, name: "Toys & Games", image: "https://example.com/toys.jpg" },
-  { id: 8, name: "Grocery", image: "https://example.com/grocery.jpg" }
-];
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { mobileSearchWord } from "../../redux/reducer/cartReducer";
+import { useCategoriesQuery } from "../../redux/api/productApi";
+import { useErrors } from "../../Hooks/Hook";
 
 
 
-export default function MobileHome({Home1st, dealsData}) {
+
+export default function MobileHome({Home1st, electronicsData, isLoading, dealsData, homeOutdoorData, recommendedData}) {
+   
+   const navigate = useNavigate()
+
+   const [search, setSearch] =useState("");
+   const [categories, setCategories] =useState([]);
+const { data: data1, isLoading: isLoading1, isError: isError1, error: error1 } = useCategoriesQuery();
+useErrors([{ isError: isError1, error: error1 }]);
+
+
+
+useEffect(() => {
+  if (data1) {
+    setCategories(data1.categories.categoriesByProductType);
+      }
+}, [data1]);
+   
+
+  //  useEffect(()=>{
+  //   if(search){
+  //     dispatch(mobileSearchWord(search))
+  //   }
+  //  },[search])
+
   return (
     <Box sx={{ bgcolor: "#f7fafc", minHeight: "100vh" }} width={{xs:"100%",}} display={{md:"none"}} >
       {/* Header */}
 
 
       {/* Search Bar */}
-      <Box sx={{ p: 2, mt:8, bgcolor: "white" }}>
+      <Box display={"flex"} sx={{ p: 2, mt:8, bgcolor: "white",gap: 1 }}>
         <TextField
           fullWidth
           placeholder="Search"
           variant="outlined"
+          value={search}
+          onChange={(e)=> setSearch(e.target.value)}
           size="small"
           InputProps={{
             startAdornment: (
@@ -64,15 +86,16 @@ export default function MobileHome({Home1st, dealsData}) {
             },
           }}
         />
+        <Button onClick={()=> navigate(`/search?keyword=${search}`)} variant="contained">Search</Button>
       </Box>
 
       {/* Category Tabs */}
       <Box sx={{ px: 2, pb: 2, bgcolor: "white" }}>
         <Stack direction="row" spacing={2} sx={{ overflowX: "auto" }}>
-     {categories.map((i, index) => (
+     {!isLoading1 && categories.map((i, index) => (
   <Chip
     key={index}
-    label={i.name} 
+    label={i} 
     sx={{
       color: "#2196f3",
       bgcolor: "#eff2f4",
@@ -80,6 +103,7 @@ export default function MobileHome({Home1st, dealsData}) {
       borderRadius: "6px",
       margin: "1px"
     }}
+    onClick={()=> navigate(`/search?category=${i}`)} 
   />
 ))}
 
@@ -180,16 +204,18 @@ export default function MobileHome({Home1st, dealsData}) {
 
         <Stack direction="row"  sx={{ overflowX: "auto", pb: 1 }} width={"100%"}>
              <Stack direction={"row"} width={"100%"} >
-               {dealsData.map((item, index) => (
+               {isLoading?  "ho" : dealsData.map((item, index) => (
                   <Box textAlign={"center"} gap={2} border={"1px solid #e0e0e0"} width={"100%"} p={3}
                   sx={{           "&:hover": {
       transform: "translateY(-5px)",
       boxShadow: "0 4px 10px rgba(0, 0, 0, 0.4)",
     }}}
+                               onClick={()=> navigate(`/productDetails/${item._id}`)}
+
                   >
                     <Box
                       component="img"
-                      src={item.image}
+                      src={item.images.urls[0]}
                       alt={item.name}
                       sx={{
                         width: 90,
@@ -216,7 +242,7 @@ export default function MobileHome({Home1st, dealsData}) {
                             cursor: "default"           // avoids hover pointer
                           }}
                         >
-                          {item.discount}
+                          {item.discount}%
                         </Button>
 
          
@@ -230,21 +256,22 @@ export default function MobileHome({Home1st, dealsData}) {
       {/* Home and Outdoor */}
       <Box sx={{ mb: 3 }} bgcolor={"white"}>
         <Typography variant="h6" fontWeight="bold" sx={{ p:2 }}>
-          Home and outdoor
+          Electronics
         </Typography>
 
         <Stack direction="row"  sx={{ overflowX: "auto", pb: 1 }} width={"100%"}>
              <Stack direction={"row"} width={"100%"} >
-               {dealsData.map((item, index) => (
+               {electronicsData.map((item, index) => (
                   <Box textAlign={"center"} gap={2} border={"1px solid #e0e0e0"} width={"100%"} p={3}
                   sx={{           "&:hover": {
       transform: "translateY(-5px)",
       boxShadow: "0 4px 10px rgba(0, 0, 0, 0.4)",
     }}}
-                  >
+                                          onClick={()=> navigate(`/productDetails/${item._id}`)}
+   >
                     <Box
                       component="img"
-                      src={item.image}
+                      src={item.images.urls[0]}
                       alt={item.name}
                       sx={{
                         width: 90,
@@ -271,7 +298,7 @@ export default function MobileHome({Home1st, dealsData}) {
                             cursor: "default"           // avoids hover pointer
                           }}
                         >
-                          {item.discount}
+                          {item.discount}%
                         </Button>
 
          
@@ -299,16 +326,18 @@ export default function MobileHome({Home1st, dealsData}) {
 
         <Stack direction="row"  sx={{ overflowX: "auto", pb: 1 }} width={"100%"}>
              <Stack direction={"row"} width={"100%"} >
-               {dealsData.map((item, index) => (
+               {homeOutdoorData.map((item, index) => (
                   <Box textAlign={"center"} gap={2} border={"1px solid #e0e0e0"} width={"100%"} p={3}
                   sx={{           "&:hover": {
       transform: "translateY(-5px)",
       boxShadow: "0 4px 10px rgba(0, 0, 0, 0.4)",
     }}}
+                           onClick={()=> navigate(`/productDetails/${item._id}`)}
+
                   >
                     <Box
                       component="img"
-                      src={item.image}
+                      src={item.images.urls[0]}
                       alt={item.name}
                       sx={{
                         width: 90,
@@ -335,7 +364,7 @@ export default function MobileHome({Home1st, dealsData}) {
                             cursor: "default"           // avoids hover pointer
                           }}
                         >
-                          {item.discount}
+                          {item.discount}%
                         </Button>
 
          
@@ -395,7 +424,7 @@ export default function MobileHome({Home1st, dealsData}) {
 
       {/* Recommended Items */}
       <Box sx={{ px: 2, mb: 3 }}>
-                     <Recommended />
+                     <Recommended recommendedData={recommendedData} isLoading={isLoading}/>
       </Box>
     </Box>
   )

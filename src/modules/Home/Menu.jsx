@@ -22,14 +22,21 @@ import {
   Headset as HeadsetIcon,
   Info as InfoIcon,
 } from "@mui/icons-material"
+import { useSelector } from "react-redux"
+import { useNavigate } from "react-router-dom"
 
 
 export default function MenuDrawer({ open, onClose }) {
+
+      const {user, loading} = useSelector((state) => state.userReducer)
+
+      const navigate = useNavigate();
+
   const mainMenuItems = [
-    { text: "Home", icon: <HomeIcon /> },
-    { text: "Categories", icon: <CategoryIcon /> },
-    { text: "Favorites", icon: <FavoriteIcon /> },
-    { text: "My orders", icon: <ReceiptIcon /> },
+    { text: "Home", icon: <HomeIcon />, go:"/" },
+    { text: "Categories", icon: <CategoryIcon />,go:"/search"  },
+    { text: "Favorites", icon: <FavoriteIcon />, go:"/"  },
+    { text: "My orders", icon: <ReceiptIcon />, go:"/"  },
   ]
 
   const secondaryMenuItems = [
@@ -63,7 +70,21 @@ export default function MenuDrawer({ open, onClose }) {
               mx: "auto",
               mb: 2,
             }}
+            src={user?.image}
           />
+ {!user?
+          <Typography
+            variant="body2"
+            sx={{
+              color: "#666",
+              cursor: "pointer",
+              "&:hover": { color: "#2196f3" },
+            }}
+            onClick={()=> navigate(`/Login`)}
+          >
+            Sign in | Register
+          </Typography>
+        :
           <Typography
             variant="body2"
             sx={{
@@ -72,8 +93,9 @@ export default function MenuDrawer({ open, onClose }) {
               "&:hover": { color: "#2196f3" },
             }}
           >
-            Sign in | Register
+            LogOut
           </Typography>
+}
         </Box>
 
         <Divider sx={{ mx: 2 }} />
@@ -81,7 +103,8 @@ export default function MenuDrawer({ open, onClose }) {
         {/* Main Navigation */}
         <List sx={{ px: 1, py: 2 }}>
           {mainMenuItems.map((item, index) => (
-            <ListItem key={index} disablePadding>
+            <ListItem key={index} disablePadding 
+            >
               <ListItemButton
                 sx={{
                   borderRadius: 1,
@@ -90,6 +113,8 @@ export default function MenuDrawer({ open, onClose }) {
                     bgcolor: "rgba(33, 150, 243, 0.08)",
                   },
                 }}
+onClick={() => navigate(`${item.go}`)}
+
               >
                 <ListItemIcon
                   sx={{

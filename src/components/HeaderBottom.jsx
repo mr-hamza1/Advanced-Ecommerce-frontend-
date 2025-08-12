@@ -1,6 +1,8 @@
 import { Box, IconButton, Typography } from "@mui/material"
 import MenuIcon from '@mui/icons-material/Menu';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import { Link } from "react-router-dom";
+
 
 const HeaderBottom = () => {
   return (
@@ -31,7 +33,11 @@ const HeaderBottom = () => {
                     <MenuIcon  sx={{fontSize: "20px", color:"black", position: "relative" , top: -1}}/>
                 </IconButton>
                 <Typography 
+                 component={Link}
+                 to={`/search`}
                     sx={{
+                      color: "black",
+                      textDecoration: "none",
                         fontSize: "14px",     
                         height: "22px",    
                         width: "79px",  
